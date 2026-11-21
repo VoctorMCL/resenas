@@ -1,30 +1,28 @@
 # Reseñas de Restaurantes — Final de Desarrollo Web
 
-Hola, este es mi proyecto final de la materia **Desarrollo Web** (Unilasallista, docente Néstor Vélez Vargas). Es una aplicación web donde cada usuario puede iniciar sesión y manejar sus propias reseñas de restaurantes.
+Aplicación web para la gestión de reseñas de restaurantes, desarrollada como entrega final de la asignatura **Desarrollo Web** (Unilasallista, docente Néstor Vélez Vargas).
 
 ## Integrantes
 
-- **Víctor Manuel Córdoba Larez** (yo) — hice el frontend, el backend, la base de datos y las pruebas.
+- **Víctor Manuel Córdoba Larez**
 
-La prueba es individual, así que todo el trabajo es mío.
+## En qué consiste la entrega
 
-## En qué consiste esta entrega
+En el repositorio se encuentran los dos proyectos que conforman la solución:
 
-Entrego los dos proyectos en un mismo repositorio de GitHub:
+- `frontend/` — aplicación desarrollada en Angular.
+- `backend/` — API desarrollada en Node.js con Express y MongoDB.
 
-- `frontend/` — mi aplicación en Angular.
-- `backend/` — mi API en Node.js con Express y MongoDB.
-
-No metí las carpetas del entorno de desarrollo (`node_modules`, `dist`, `.angular`, `.idea`, etc.), porque el enunciado quita 0.5 por cada lado si se envían. Para eso dejé los `.gitignore` en la raíz y en cada proyecto.
+La entrega no incluye carpetas propias del entorno de desarrollo (`node_modules`, `dist`, `.angular`, `.idea`, etc.), según lo indicado en el enunciado. Para esto se incluyen los archivos `.gitignore` en la raíz y en cada proyecto.
 
 ## Qué hace la aplicación
 
-- **Registro e inicio de sesión:** el usuario se registra con usuario y contraseña. La contraseña se guarda encriptada con `bcrypt`, y al loguearse recibo un token JWT que guardo en el `sessionStorage` del navegador.
-- **Rutas protegidas:** con un guard reviso que haya token para entrar a `/home`, y con otro evito que un usuario ya logueado vuelva a `/login`.
-- **CRUD de reseñas:** ya dentro, el usuario puede crear, listar, consultar, editar y borrar sus reseñas. Cada reseña tiene nombre del restaurante, calificación (1 a 5), fecha de visita y observaciones.
-- **Aislamiento por usuario:** este es el punto que más cuidé, porque el enunciado quita 1.0 si se incumple. Todas las consultas llevan el filtro del usuario del token (`usuario: req.userID`), así que nadie puede ver, editar ni borrar reseñas ajenas. Si intentan usar un id que no es suyo, la API responde 404.
+- **Registro e inicio de sesión:** el usuario se registra con usuario y contraseña. La contraseña se almacena encriptada con `bcrypt` y, al iniciar sesión, la API devuelve un token JWT que se guarda en el `sessionStorage` del navegador.
+- **Rutas protegidas:** un guard verifica la existencia del token para acceder a `/home`, y otro evita que un usuario autenticado vuelva a `/login`.
+- **CRUD de reseñas:** el usuario autenticado puede crear, listar, consultar, editar y eliminar sus reseñas. Cada reseña tiene nombre del restaurante, calificación (1 a 5), fecha de visita y observaciones.
+- **Aislamiento por usuario:** todas las consultas filtran por el usuario del token (`usuario: req.userID`), por lo que ningún usuario puede ver, editar ni eliminar reseñas de otro. Si se intenta acceder a un identificador ajeno, la API responde `404`.
 
-## Tecnologías que usé
+## Tecnologías utilizadas
 
 | Parte | Tecnología |
 | --- | --- |
@@ -32,11 +30,11 @@ No metí las carpetas del entorno de desarrollo (`node_modules`, `dist`, `.angul
 | Backend | Node.js + Express + Mongoose |
 | Base de datos | MongoDB (`mongodb://localhost:27017/resenas`) |
 | Autenticación | JWT con `jwt-simple` + `bcrypt` |
-| Pruebas | Script de peticiones HTTP con `fetch` de Node |
+| Pruebas | Peticiones HTTP con `fetch` de Node |
 
-## Cómo correrlo en mi máquina
+## Cómo ejecutar el proyecto
 
-Primero levanté MongoDB en local (puerto 27017). Luego:
+Se requiere MongoDB corriendo en local en el puerto 27017.
 
 **Backend** (terminal 1):
 
@@ -46,13 +44,7 @@ npm install
 node index.js
 ```
 
-Cuando conecta, imprime:
-
-```
-Conexion exitosa
-```
-
-y se queda escuchando en el puerto **2307**.
+Al conectar se muestra `Conexion exitosa` y el servidor queda escuchando en el puerto **2307**.
 
 **Frontend** (terminal 2):
 
@@ -62,26 +54,26 @@ npm install
 npm start
 ```
 
-Se abre en **http://localhost:2305**. Ahí me registro o inicio sesión, y en `/home` hago el CRUD de mis reseñas. Para salir, le doy a "Cerrar sesión" y se limpia el `sessionStorage`.
+La aplicación queda disponible en **http://localhost:2305**. Desde ahí se puede registrar, iniciar sesión y administrar las reseñas. Al cerrar sesión se limpia el `sessionStorage`.
 
-## APIs que expongo
+## APIs expuestas
 
-| Método | Ruta | Para qué sirve |
+| Método | Ruta | Descripción |
 | --- | --- | --- |
-| POST | `/api/usuario/registrar` | Crear usuario |
-| POST | `/api/usuario/login` | Login y token |
+| POST | `/api/usuario/registrar` | Registrar usuario |
+| POST | `/api/usuario/login` | Iniciar sesión y obtener el token |
 | POST | `/api/resena` | Crear reseña |
-| GET | `/api/resenas` | Listar solo mis reseñas |
-| GET | `/api/resena/:_id` | Consultar una reseña mía |
-| PUT | `/api/resena/:_id` | Editar una reseña mía |
-| DELETE | `/api/resena/:_id` | Borrar una reseña mía |
+| GET | `/api/resenas` | Listar las reseñas del usuario |
+| GET | `/api/resena/:_id` | Consultar una reseña propia |
+| PUT | `/api/resena/:_id` | Actualizar una reseña propia |
+| DELETE | `/api/resena/:_id` | Eliminar una reseña propia |
 
-Todas las de reseñas exigen el header `Authorization: Bearer <token>`.
+Todas las rutas de reseñas exigen el header `Authorization: Bearer <token>`.
 
-## Cómo lo probé
+## Verificación
 
-Compilé el frontend con `npm run build` y salió sin errores. Después levanté el backend y corrí un script con peticiones reales: registro de dos usuarios, login, crear/listar/editar/borrar reseñas, y varios intentos de uno accediendo a las reseñas del otro. Todas las pruebas pasaron: el usuario B no pudo ver, consultar, editar ni borrar la reseña del usuario A, y la reseña quedó intacta.
+El frontend se compiló con `npm run build` sin errores. El backend se probó con peticiones reales: registro de dos usuarios, login, validación de campos, CRUD completo y comprobación del aislamiento por usuario. En todas las pruebas, el segundo usuario no pudo ver, consultar, editar ni eliminar las reseñas del primero, y la reseña original permaneció intacta.
 
 ## Entrega
 
-Subo ambos proyectos a un único repositorio público (`https://github.com/VoctorMCL/resenas`) y envío el enlace antes del **24 de noviembre a las 23:59** al correo `nvelez@unilasallista.edu.co`, con mi nombre como integrante único.
+Los dos proyectos se entregan en un único repositorio público: https://github.com/VoctorMCL/resenas. El enlace se envía antes del **24 de noviembre a las 23:59** al correo `nvelez@unilasallista.edu.co`.
