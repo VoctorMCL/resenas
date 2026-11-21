@@ -155,7 +155,7 @@
 
 .resumen__numero {
     display: block;
-    font-family: Georgia, "Times New Roman", serif;
+    font-family: "Nunito", "Segoe UI", sans-serif;
     font-size: 1.85rem;
     line-height: 1.1;
     color: var(--cafe-oscuro);
@@ -440,7 +440,7 @@
 
 .vacio strong {
     color: var(--cafe-oscuro);
-    font-family: Georgia, "Times New Roman", serif;
+    font-family: "Nunito", "Segoe UI", sans-serif;
     font-size: 1.1rem;
 }
 
