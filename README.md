@@ -5,7 +5,7 @@ Aplicación web para la gestión de reseñas de restaurantes, desarrollada como 
 ## Integrantes
 
 - **Ricardo Jaraba Gallego**
-- **Víctor Manuel Córdoba Larez**
+- **Victor Manuel Cordoba Larez**
 
 ## En qué consiste la entrega
 
@@ -70,11 +70,3 @@ La aplicación queda disponible en **http://localhost:2305**. Desde ahí se pued
 | DELETE | `/api/resena/:_id` | Eliminar una reseña propia |
 
 Todas las rutas de reseñas exigen el header `Authorization: Bearer <token>`.
-
-## Verificación
-
-El frontend se compiló con `npm run build` sin errores. El backend se probó con peticiones reales: registro de dos usuarios, login, validación de campos, CRUD completo y comprobación del aislamiento por usuario. En todas las pruebas, el segundo usuario no pudo ver, consultar, editar ni eliminar las reseñas del primero, y la reseña original permaneció intacta.
-
-## Entrega
-
-Los dos proyectos se entregan en un único repositorio público: https://github.com/VoctorMCL/resenas. El enlace se envía antes del **24 de noviembre a las 23:59** al correo `nvelez@unilasallista.edu.co`.
