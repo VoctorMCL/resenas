@@ -67,12 +67,15 @@ export class Home {
   }
 
   ajustarCalificacion(delta: number): void {
-    let actual = Number(this.formularioResena.value.calificacion) || 1;
+    let actual = Number(this.formularioResena.value.calificacion);
+    if (isNaN(actual)) {
+      actual = 0;
+    }
     this.formularioResena.controls.calificacion.setValue(String(this.limitarCalificacion(actual + delta)));
   }
 
   private limitarCalificacion(valor: number): number {
-    return Math.round(Math.max(1, Math.min(5, valor)) * 10) / 10;
+    return Math.round(Math.max(0, Math.min(5, valor)) * 10) / 10;
   }
 
   formularioResena = new FormGroup({
@@ -129,17 +132,19 @@ export class Home {
 
   guardarResena(): void {
     let nombreRestaurante = this.formularioResena.value.nombreRestaurante || '';
-    let calificacion = Number(this.formularioResena.value.calificacion) || 0;
+    let calificacionCruda = this.formularioResena.value.calificacion;
+    let calificacion = Number(calificacionCruda);
     let fechaVisita = this.formularioResena.value.fechaVisita || '';
     let observaciones = this.formularioResena.value.observaciones || '';
 
-    if (!nombreRestaurante.trim() || !fechaVisita || !observaciones.trim()) {
+    if (!nombreRestaurante.trim() || !fechaVisita || !observaciones.trim() ||
+      calificacionCruda === '' || calificacionCruda === null || calificacionCruda === undefined || isNaN(calificacion)) {
       this.mensajeError.set('Todos los campos son obligatorios: Nombre Restaurante, Calificación, Fecha Visita y Observaciones');
       return;
     }
 
-    if (calificacion < 1 || calificacion > 5) {
-      this.mensajeError.set('La calificación debe estar entre 1 y 5');
+    if (calificacion < 0 || calificacion > 5) {
+      this.mensajeError.set('La calificación debe estar entre 0 y 5');
       return;
     }
 

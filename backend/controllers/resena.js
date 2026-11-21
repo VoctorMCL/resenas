@@ -52,8 +52,8 @@ function crearResena(req, resp) {
         });
     }
 
-    if (calificacion < 1 || calificacion > 5) {
-        return resp.status(400).send({ 'message': 'La calificación debe ser un número entre 1 y 5' });
+    if (calificacion < 0 || calificacion > 5) {
+        return resp.status(400).send({ 'message': 'La calificación debe ser un número entre 0 y 5' });
     }
 
     let fecha = new Date(fechaVisita);
@@ -150,8 +150,8 @@ function actualizarResena(req, resp) {
 
     if (body.calificacion !== undefined) {
         let cal = Number(body.calificacion);
-        if (isNaN(cal) || cal < 1 || cal > 5) {
-            return resp.status(400).send({ 'message': 'La calificación debe ser un número entre 1 y 5' });
+        if (isNaN(cal) || cal < 0 || cal > 5) {
+            return resp.status(400).send({ 'message': 'La calificación debe ser un número entre 0 y 5' });
         }
         updateData.calificacion = cal;
     }

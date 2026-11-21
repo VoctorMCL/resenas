@@ -20,7 +20,7 @@ La entrega no incluye carpetas propias del entorno de desarrollo (`node_modules`
 
 - **Registro e inicio de sesión:** el usuario se registra con usuario y contraseña. La contraseña se almacena encriptada con `bcrypt` y, al iniciar sesión, la API devuelve un token JWT que se guarda en el `sessionStorage` del navegador.
 - **Rutas protegidas:** un guard verifica la existencia del token para acceder a `/home`, y otro evita que un usuario autenticado vuelva a `/login`.
-- **CRUD de reseñas:** el usuario autenticado puede crear, listar, consultar, editar y eliminar sus reseñas. Cada reseña tiene nombre del restaurante, calificación (1 a 5), fecha de visita y observaciones.
+- **CRUD de reseñas:** el usuario autenticado puede crear, listar, consultar, editar y eliminar sus reseñas. Cada reseña tiene nombre del restaurante, calificación de 0 a 5 marcada con estrellas (con decimales como 4.5 o 4.7), fecha de visita (hasta el día actual) y observaciones.
 - **Aislamiento por usuario:** todas las consultas filtran por el usuario del token (`usuario: req.userID`), por lo que ningún usuario puede ver, editar ni eliminar reseñas de otro. Si se intenta acceder a un identificador ajeno, la API responde `404`.
 
 ## Tecnologías utilizadas
@@ -32,6 +32,30 @@ La entrega no incluye carpetas propias del entorno de desarrollo (`node_modules`
 | Base de datos | MongoDB (`mongodb://localhost:27017/resenas`) |
 | Autenticación | JWT con `jwt-simple` + `bcrypt` |
 | Pruebas | Peticiones HTTP con `fetch` de Node |
+
+## Diseño e interfaz
+
+Además de la funcionalidad exigida, se trabajó una interfaz con una identidad visual propia y definida, organizada en dos pantallas:
+
+- **Inicio de sesión (`login`):** pantalla dividida en dos zonas, una ilustración con una taza de café en SVG y el formulario de acceso/registro.
+- **Inicio (`home`):** cabecera con la identidad de la aplicación, un resumen de la actividad, la lista de reseñas con sus estrellas y un editor lateral para crear o actualizar cada entrada.
+
+### Paleta y tipografía
+
+- Paleta en tonos café: `#3b2418` (café oscuro), `#6f4e37` (café), `#8b6347` (café medio) y `#c99b6d` (caramelo), con miel `#d9a441` para las estrellas.
+- Fondos crema (`#fffdfa`, `#fbf5ee`, `#f4e6d7`) y acentos pastel rosa (`#f3d9d2`), miel (`#f6e6c8`) y verde (`#dfe8d5`) para tarjetas y etiquetas.
+- Tipografía **Nunito**, alojada localmente en `frontend/public/fonts/nunito-latin.woff2` para que la interfaz no dependa de servicios externos.
+
+### Elementos visuales
+
+- Iconos e ilustraciones en **SVG en línea** y favicon también SVG, sin uso de emojis en la interfaz.
+- Animaciones suaves de entrada y transiciones en botones y tarjetas, con respeto por la preferencia del sistema `prefers-reduced-motion`.
+
+### Calificación y fecha
+
+- La calificación se marca con **5 estrellas SVG en un rango de 0 a 5 y pasos de 0.1**, por lo que se pueden registrar valores como `4.5` o `4.7`. El relleno es parcial y exacto: un `4.7` muestra cuatro estrellas completas y la quinta al 70 %.
+- El valor se confirma en un campo numérico con botones **+** y **−** que ajustan de 0.1 en 0.1, como forma alternativa y precisa de calificar.
+- La fecha de visita tiene como valor máximo **el día actual**: el límite se calcula al abrir la aplicación, de modo que cambia automáticamente cada día. La validación se repite en el backend para impedir fechas futuras mediante peticiones directas.
 
 ## Cómo ejecutar el proyecto
 
