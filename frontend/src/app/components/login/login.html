@@ -1,44 +1,115 @@
-<div class="min-vh-100 d-flex align-items-center justify-content-center bg-light">
-    <div class="card shadow p-4 custom-box">
-        <div class="text-center mb-4">
-            <h2 class="fw-bold">{{ esRegistro() ? 'Registrarse' : 'Iniciar sesión' }}</h2>
-            <p class="text-muted">
-                {{ esRegistro() ? 'Cree una cuenta para gestionar sus reseñas' : 'Ingrese sus datos para continuar' }}
-            </p>
-        </div>
+<div class="acceso">
+    <span class="acceso__burbuja acceso__burbuja--rosa"></span>
+    <span class="acceso__burbuja acceso__burbuja--miel"></span>
+    <span class="acceso__grano acceso__grano--uno"></span>
+    <span class="acceso__grano acceso__grano--dos"></span>
 
-        <form [formGroup]="formularioLogin" (ngSubmit)="iniciarSesion()">
-            <div class="mb-3">
-                <label for="email" class="form-label">Email / Usuario</label>
-                <input class="form-control" formControlName="email" placeholder="correo@gmail.com" type="text" id="email">
+    <main class="acceso__tarjeta tarjeta">
+        <section class="acceso__arte">
+            <div class="marca">
+                <svg class="marca__icono" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+                    <path class="vapor vapor--uno" d="M23 17c-4-4 4-6 0-11" stroke="#d9b48f" stroke-width="3" stroke-linecap="round" />
+                    <path class="vapor vapor--dos" d="M33 17c-4-4 4-6 0-11" stroke="#d9b48f" stroke-width="3" stroke-linecap="round" />
+                    <path d="M12 26h34v13a15 15 0 0 1-15 15h-4a15 15 0 0 1-15-15V26Z" fill="#fff8ef" />
+                    <path d="M46 30h4a8 8 0 0 1 0 16h-4" stroke="#fff8ef" stroke-width="4" stroke-linecap="round" />
+                    <path d="M12 26h34v6H12z" fill="#c99b6d" />
+                    <path d="M18 43h22" stroke="#8b6347" stroke-width="2" stroke-linecap="round" opacity="0.5" />
+                </svg>
+                <span class="marca__nombre">Diario <strong>Reseñas</strong></span>
             </div>
 
-            <div class="mb-3">
-                <label for="password" class="form-label">Password</label>
-                <input class="form-control" formControlName="password" placeholder="Ingrese su contraseña" type="password" id="password">
+            <div class="arte__centro">
+                <svg class="taza" viewBox="0 0 220 200" fill="none" aria-hidden="true">
+                    <circle class="taza__halo" cx="110" cy="100" r="86" stroke="rgba(255,248,239,.16)" stroke-width="1" />
+                    <circle class="taza__halo taza__halo--interno" cx="110" cy="100" r="66" stroke="rgba(255,248,239,.12)" stroke-width="1" />
+                    <path class="vapor vapor--grande vapor--uno" d="M82 56c-9-10 9-14 0-27" stroke="#e8c5a0" stroke-width="5" stroke-linecap="round" />
+                    <path class="vapor vapor--grande vapor--dos" d="M110 54c-9-10 9-14 0-27" stroke="#e8c5a0" stroke-width="5" stroke-linecap="round" />
+                    <path class="vapor vapor--grande vapor--tres" d="M138 56c-9-10 9-14 0-27" stroke="#e8c5a0" stroke-width="5" stroke-linecap="round" />
+                    <path d="M45 76h118v36a42 42 0 0 1-42 42h-34a42 42 0 0 1-42-42V76Z" fill="#fff8ef" />
+                    <path d="M163 86h9a22 22 0 0 1 0 44h-9" stroke="#fff8ef" stroke-width="9" stroke-linecap="round" />
+                    <path d="M45 76h118v17H45z" fill="#c99b6d" />
+                    <path d="M62 134h84" stroke="#8b6347" stroke-width="3" stroke-linecap="round" opacity="0.35" />
+                    <ellipse class="taza__plato" cx="104" cy="166" rx="72" ry="10" fill="rgba(255,248,239,.14)" />
+                </svg>
+
+                <h1 class="arte__titulo">Cada taza,<br>una historia.</h1>
+                <p class="arte__texto">Guarda tus visitas, califica tus favoritos y encuentra siempre ese lugar al que quieres volver.</p>
             </div>
 
-            <button type="submit" class="btn btn-primary w-100">
-                {{ esRegistro() ? 'Registrarse' : 'Iniciar sesión' }}
-            </button>
-        </form>
-
-        <div class="text-center mt-3">
-            <button type="button" class="btn btn-link text-decoration-none" (click)="toggleModo()">
-                {{ esRegistro() ? '¿Ya tienes cuenta? Inicia sesión' : '¿No tienes cuenta? Regístrate aquí' }}
-            </button>
-        </div>
-
-        @if (mensajeExito()){
-            <div class="alert alert-success mt-3 mb-0 text-center">
-                {{ mensajeExito() }}
+            <div class="arte__pie">
+                <span class="arte__linea"></span>
+                <span>Tu diario de restaurantes</span>
             </div>
-        }
+        </section>
 
-        @if (mensajeError()){
-            <div class="alert alert-danger mt-3 mb-0 text-center">
-                {{ mensajeError() }}
+        <section class="acceso__formulario">
+            <div class="formulario__cabecera">
+                <span class="formulario__kicker">{{ esRegistro() ? 'Comienza aquí' : 'Bienvenido de nuevo' }}</span>
+                <h2>{{ esRegistro() ? 'Crea tu cuenta' : 'Inicia sesión' }}</h2>
+                <p>{{ esRegistro() ? 'Regístrate para empezar a escribir tus reseñas.' : 'Ingresa tus datos para continuar con tus reseñas.' }}</p>
             </div>
-        }
-    </div>
+
+            <form [formGroup]="formularioLogin" (ngSubmit)="iniciarSesion()" class="formulario">
+                <div class="campo">
+                    <label for="email" class="etiqueta-campo">Email o usuario</label>
+                    <div class="campo__caja">
+                        <svg class="campo__icono" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.8" />
+                            <path d="M4.5 20.5c0-4 3.4-6.5 7.5-6.5s7.5 2.5 7.5 6.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                        </svg>
+                        <input class="form-control campo-control campo-control--icono" formControlName="email"
+                            placeholder="correo@gmail.com" type="text" id="email" autocomplete="username">
+                    </div>
+                </div>
+
+                <div class="campo">
+                    <label for="password" class="etiqueta-campo">Contraseña</label>
+                    <div class="campo__caja">
+                        <svg class="campo__icono" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <rect x="5" y="10" width="14" height="10" rx="2.5" stroke="currentColor" stroke-width="1.8" />
+                            <path d="M8.5 10V7a3.5 3.5 0 0 1 7 0v3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                        </svg>
+                        <input class="form-control campo-control campo-control--icono" formControlName="password"
+                            placeholder="Ingrese su contraseña" type="password" id="password" autocomplete="current-password">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-cafe formulario__boton">
+                    <span>{{ esRegistro() ? 'Registrarse' : 'Iniciar sesión' }}</span>
+                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path d="M4 12h15M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg>
+                </button>
+            </form>
+
+            <div class="formulario__pie">
+                <p>{{ esRegistro() ? '¿Ya tienes cuenta?' : '¿Todavía no tienes cuenta?' }}</p>
+                <button type="button" class="btn btn-enlace" (click)="toggleModo()">
+                    {{ esRegistro() ? 'Inicia sesión' : 'Regístrate aquí' }}
+                </button>
+            </div>
+
+            @if (mensajeExito()) {
+            <div class="aviso aviso--exito formulario__aviso">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8" />
+                    <path d="M8 12.5l2.6 2.6L16.5 9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+                <span>{{ mensajeExito() }}</span>
+            </div>
+            }
+
+            @if (mensajeError()) {
+            <div class="aviso aviso--error formulario__aviso">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8" />
+                    <path d="M12 7.5v6M12 16.5h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                </svg>
+                <span>{{ mensajeError() }}</span>
+            </div>
+            }
+        </section>
+    </main>
 </div>

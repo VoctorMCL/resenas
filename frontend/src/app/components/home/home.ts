@@ -21,6 +21,16 @@ export class Home {
   mensajeError = signal('');
   mensajeExito = signal('');
   editandoId = signal<string | null>(null);
+  estrellas = [1, 2, 3, 4, 5];
+
+  promedioCalificacion(): string {
+    let lista = this.resenas();
+    if (!lista.length) {
+      return '0.0';
+    }
+    let total = lista.reduce((suma, resena) => suma + Number(resena.calificacion), 0);
+    return (total / lista.length).toFixed(1);
+  }
 
   formularioResena = new FormGroup({
     nombreRestaurante: new FormControl(''),

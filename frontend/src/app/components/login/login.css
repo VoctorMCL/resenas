@@ -1,5 +1,368 @@
-.custom-box{
+.acceso {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2.5rem 1.25rem;
+    overflow: hidden;
+}
+
+.acceso__burbuja {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(3px);
+    pointer-events: none;
+}
+
+.acceso__burbuja--rosa {
+    width: 340px;
+    height: 340px;
+    top: -110px;
+    left: -120px;
+    background: rgba(243, 217, 210, 0.65);
+    animation: flotar 11s ease-in-out infinite;
+}
+
+.acceso__burbuja--miel {
+    width: 300px;
+    height: 300px;
+    right: -120px;
+    bottom: -110px;
+    background: rgba(246, 230, 200, 0.7);
+    animation: flotar 13s ease-in-out infinite reverse;
+}
+
+.acceso__grano {
+    position: absolute;
+    width: 26px;
+    height: 40px;
+    border: 2px solid rgba(111, 78, 55, 0.18);
+    border-radius: 50%;
+    pointer-events: none;
+    animation: flotar 9s ease-in-out infinite;
+}
+
+.acceso__grano::after {
+    content: "";
+    position: absolute;
+    top: 4px;
+    bottom: 4px;
+    left: 50%;
+    width: 2px;
+    background: rgba(111, 78, 55, 0.16);
+    border-radius: 2px;
+}
+
+.acceso__grano--uno {
+    top: 16%;
+    right: 8%;
+    transform: rotate(24deg);
+}
+
+.acceso__grano--dos {
+    bottom: 14%;
+    left: 9%;
+    transform: rotate(-32deg);
+    animation-delay: -4s;
+}
+
+.acceso__tarjeta {
+    position: relative;
+    z-index: 1;
     width: 100%;
-    max-width: 420px;
-    height: max-content;
+    max-width: 920px;
+    min-height: 580px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    overflow: hidden;
+    border-radius: 30px;
+    box-shadow: var(--sombra);
+    animation: subir 0.7s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+}
+
+.acceso__arte {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding: 2.6rem 2.4rem;
+    overflow: hidden;
+    color: #fff8ef;
+    background: linear-gradient(155deg, #8b6347 0%, #6f4e37 45%, #4a2f22 100%);
+}
+
+.acceso__arte::before {
+    content: "";
+    position: absolute;
+    width: 320px;
+    height: 320px;
+    right: -150px;
+    top: -140px;
+    border: 1px solid rgba(255, 248, 239, 0.14);
+    border-radius: 50%;
+}
+
+.acceso__arte::after {
+    content: "";
+    position: absolute;
+    width: 240px;
+    height: 240px;
+    left: -130px;
+    bottom: -120px;
+    border: 1px solid rgba(255, 248, 239, 0.1);
+    border-radius: 50%;
+}
+
+.marca {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+}
+
+.marca__icono {
+    width: 40px;
+    height: 40px;
+    animation: latido 4s ease-in-out infinite;
+}
+
+.marca__nombre {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 1.05rem;
+    letter-spacing: 0.01em;
+}
+
+.marca__nombre strong {
+    color: #f0d5b5;
+    font-weight: 700;
+}
+
+.arte__centro {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+}
+
+.taza {
+    width: min(260px, 78%);
+    height: auto;
+    margin-bottom: 0.5rem;
+    filter: drop-shadow(0 18px 22px rgba(30, 18, 12, 0.28));
+    animation: subir 0.9s 0.15s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+}
+
+.taza__halo {
+    transform-origin: 110px 100px;
+    animation: latido 6s ease-in-out infinite;
+}
+
+.taza__halo--interno {
+    animation-delay: -3s;
+}
+
+.vapor {
+    transform-origin: center bottom;
+    animation: vapor 3.2s ease-in-out infinite;
+}
+
+.vapor--dos {
+    animation-delay: -1.1s;
+}
+
+.vapor--grande {
+    animation-duration: 3.6s;
+}
+
+.vapor--tres {
+    animation-delay: -2.2s;
+}
+
+.arte__titulo {
+    margin: 0 0 0.8rem;
+    color: #fff8ef;
+    font-size: clamp(2rem, 3.4vw, 2.7rem);
+    line-height: 1.1;
+    animation: subir 0.8s 0.25s both;
+}
+
+.arte__texto {
+    max-width: 330px;
+    margin: 0 auto;
+    color: rgba(255, 248, 239, 0.78);
+    font-size: 0.94rem;
+    line-height: 1.65;
+    animation: subir 0.8s 0.35s both;
+}
+
+.arte__pie {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255, 248, 239, 0.6);
+}
+
+.arte__linea {
+    width: 34px;
+    height: 1px;
+    background: #c99b6d;
+}
+
+.acceso__formulario {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 3rem 2.8rem;
+    background: var(--crema);
+    animation: aparecer 0.7s 0.1s both;
+}
+
+.formulario__cabecera {
+    margin-bottom: 1.8rem;
+}
+
+.formulario__kicker {
+    display: inline-block;
+    margin-bottom: 0.6rem;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--cafe-medio);
+}
+
+.formulario__cabecera h2 {
+    margin: 0 0 0.45rem;
+    font-size: 2rem;
+}
+
+.formulario__cabecera p {
+    margin: 0;
+    color: var(--texto-suave);
+    font-size: 0.92rem;
+    line-height: 1.5;
+}
+
+.formulario {
+    display: flex;
+    flex-direction: column;
+    gap: 1.05rem;
+}
+
+.campo__caja {
+    position: relative;
+}
+
+.campo__icono {
+    position: absolute;
+    top: 50%;
+    left: 1rem;
+    width: 19px;
+    height: 19px;
+    transform: translateY(-50%);
+    color: var(--caramelo);
+    pointer-events: none;
+    transition: color 0.25s ease;
+}
+
+.campo__caja:focus-within .campo__icono {
+    color: var(--cafe);
+}
+
+.formulario__boton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    width: 100%;
+    margin-top: 0.4rem;
+}
+
+.formulario__boton svg {
+    width: 19px;
+    height: 19px;
+    transition: transform 0.25s ease;
+}
+
+.formulario__boton:hover svg {
+    transform: translateX(4px);
+}
+
+.formulario__pie {
+    margin-top: 1.5rem;
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--texto-suave);
+}
+
+.formulario__pie p {
+    margin: 0 0 0.2rem;
+}
+
+.formulario__aviso {
+    margin-top: 1.1rem;
+}
+
+@media (max-width: 780px) {
+    .acceso {
+        padding: 1.25rem;
+    }
+
+    .acceso__tarjeta {
+        grid-template-columns: 1fr;
+        max-width: 460px;
+    }
+
+    .acceso__arte {
+        padding: 1.8rem 2rem 2rem;
+        gap: 1rem;
+    }
+
+    .arte__centro {
+        display: grid;
+        grid-template-columns: 130px 1fr;
+        align-items: center;
+        gap: 1rem;
+        text-align: left;
+    }
+
+    .taza {
+        width: 130px;
+        margin: 0;
+    }
+
+    .arte__titulo {
+        font-size: 1.9rem;
+    }
+
+    .arte__texto {
+        max-width: none;
+        font-size: 0.85rem;
+    }
+
+    .arte__pie {
+        display: none;
+    }
+
+    .acceso__formulario {
+        padding: 2rem 1.8rem;
+    }
+}
+
+@media (max-width: 420px) {
+    .arte__centro {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+
+    .taza {
+        margin: 0 auto;
+    }
 }

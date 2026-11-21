@@ -1,99 +1,238 @@
-@if (mensajeExito()){
-    <div class="alert alert-success mt-3 mb-0 text-center">
-        {{ mensajeExito() }}
+<div class="panel">
+    <span class="panel__burbuja panel__burbuja--rosa"></span>
+    <span class="panel__burbuja panel__burbuja--verde"></span>
+
+    @if (mensajeExito()) {
+    <div class="aviso aviso--exito panel__aviso">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8" />
+            <path d="M8 12.5l2.6 2.6L16.5 9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                stroke-linejoin="round" />
+        </svg>
+        <span>{{ mensajeExito() }}</span>
     </div>
-}
+    }
 
-@if (mensajeError()){
-    <div class="alert alert-danger mt-3 mb-0 text-center">
-        {{ mensajeError() }}
+    @if (mensajeError()) {
+    <div class="aviso aviso--error panel__aviso">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8" />
+            <path d="M12 7.5v6M12 16.5h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+        </svg>
+        <span>{{ mensajeError() }}</span>
     </div>
-}
+    }
 
-<div class="p-3 d-flex justify-content-between align-items-center">
-    <h3 class="fw-bold m-0">Mis Reseñas de Restaurante</h3>
-    <button class="btn btn-secondary" (click)="cerrarSesion()">
-        Cerrar sesión
-    </button>
-</div>
-
-<div class="table-responsive p-3">
-    <table class="table table-striped table-hover table-bordered align-middle">
-        <thead class="table-dark">
-            <tr>
-                <th>Nombre Restaurante</th>
-                <th>Calificación</th>
-                <th>Fecha Visita</th>
-                <th>Observaciones</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            @for (resena of resenas(); track resena._id) {
-                <tr>
-                    <td>{{ resena.nombreRestaurante }}</td>
-                    <td>{{ resena.calificacion }} / 5</td>
-                    <td>{{ resena.fechaVisita | date: 'yyyy-MM-dd' }}</td>
-                    <td>{{ resena.observaciones }}</td>
-                    <td>
-                        <button class="btn btn-warning me-2" (click)="editarResena(resena)">
-                            Editar
-                        </button>
-                        <button class="btn btn-danger" (click)="eliminarResena(resena._id)">
-                            Eliminar
-                        </button>
-                    </td>
-                </tr>
-            } @empty {
-                <tr>
-                    <td colspan="5" class="text-center text-muted py-3">
-                        No hay reseñas registradas. Utiliza el formulario de abajo para crear una.
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-</div>
-
-<div class="d-flex align-items-center justify-content-center bg-light p-4">
-    <div class="card shadow p-4 custom-box">
-        <div class="text-center mb-4">
-            <h2 class="fw-bold">{{ editandoId() ? 'Editar reseña' : 'Crear reseña' }}</h2>
+    <header class="cabecera">
+        <div class="cabecera__marca">
+            <svg class="cabecera__icono" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+                <path class="vapor vapor--uno" d="M23 17c-4-4 4-6 0-11" stroke="#c99b6d" stroke-width="3"
+                    stroke-linecap="round" />
+                <path class="vapor vapor--dos" d="M33 17c-4-4 4-6 0-11" stroke="#c99b6d" stroke-width="3"
+                    stroke-linecap="round" />
+                <path d="M12 26h34v13a15 15 0 0 1-15 15h-4a15 15 0 0 1-15-15V26Z" fill="#6f4e37" />
+                <path d="M46 30h4a8 8 0 0 1 0 16h-4" stroke="#6f4e37" stroke-width="4" stroke-linecap="round" />
+                <path d="M12 26h34v6H12z" fill="#c99b6d" />
+            </svg>
+            <div>
+                <span class="cabecera__kicker">Diario de</span>
+                <h1>Reseñas de Restaurante</h1>
+            </div>
         </div>
 
-        <form [formGroup]="formularioResena" (ngSubmit)="guardarResena()">
+        <button class="btn btn-crema salir" (click)="cerrarSesion()">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M10 4H5v16h5M14 8l4 4-4 4M18 12H9" stroke="currentColor" stroke-width="1.8"
+                    stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <span>Cerrar sesión</span>
+        </button>
+    </header>
 
-            <div class="mb-3">
-                <label for="nombreRestaurante" class="form-label">Nombre Restaurante</label>
-                <input class="form-control" formControlName="nombreRestaurante" type="text" id="nombreRestaurante" placeholder="Nombre del restaurante">
+    <section class="resumen" aria-label="Resumen de reseñas">
+        <article class="resumen__tarjeta resumen__tarjeta--rosa">
+            <span class="resumen__icono">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M4 7h16M9 7V4.5h6V7M6.5 7l1 13h9l1-13" stroke="currentColor" stroke-width="1.7"
+                        stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M10 11v5M14 11v5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
+                </svg>
+            </span>
+            <div>
+                <strong class="resumen__numero">{{ resenas().length }}</strong>
+                <span class="resumen__texto">Reseñas guardadas</span>
+            </div>
+        </article>
+
+        <article class="resumen__tarjeta resumen__tarjeta--miel">
+            <span class="resumen__icono">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M12 3.5l2.7 5.5 6 .9-4.3 4.2 1 6-5.4-2.8-5.4 2.8 1-6-4.3-4.2 6-.9L12 3.5Z"
+                        stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" />
+                </svg>
+            </span>
+            <div>
+                <strong class="resumen__numero">{{ promedioCalificacion() }}</strong>
+                <span class="resumen__texto">Calificación promedio</span>
+            </div>
+        </article>
+
+        <article class="resumen__tarjeta resumen__tarjeta--verde">
+            <span class="resumen__icono">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M4 17h16M6 17a6 6 0 0 1 12 0M12 5v3M9 6l1 2M15 6l-1 2" stroke="currentColor"
+                        stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            </span>
+            <div>
+                <strong class="resumen__numero resumen__numero--texto">Tu espacio</strong>
+                <span class="resumen__texto">Solo tus reseñas, siempre privadas</span>
+            </div>
+        </article>
+    </section>
+
+    <div class="contenido">
+        <section class="lista tarjeta">
+            <div class="seccion__cabecera">
+                <div>
+                    <span class="seccion__kicker">Historial</span>
+                    <h2>Mis reseñas</h2>
+                </div>
+                <span class="seccion__conteo">{{ resenas().length }} registradas</span>
             </div>
 
-            <div class="mb-3">
-                <label for="calificacion" class="form-label">Calificación (1 a 5)</label>
-                <input class="form-control" formControlName="calificacion" type="number" min="1" max="5" id="calificacion" placeholder="1 a 5">
+            <div class="table-responsive">
+                <table class="tabla">
+                    <thead>
+                        <tr>
+                            <th>Restaurante</th>
+                            <th>Calificación</th>
+                            <th>Fecha visita</th>
+                            <th>Observaciones</th>
+                            <th class="tabla__acciones">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (resena of resenas(); track resena._id) {
+                        <tr>
+                            <td>
+                                <div class="restaurante">
+                                    <span class="restaurante__icono">
+                                        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                            <path d="M4 17h16M6 17a6 6 0 0 1 12 0M12 5v3M9 6l1 2M15 6l-1 2"
+                                                stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                                                stroke-linejoin="round" />
+                                        </svg>
+                                    </span>
+                                    <div>
+                                        <strong>{{ resena.nombreRestaurante }}</strong>
+                                        <small>En tu diario</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="estrellas" [attr.aria-label]="resena.calificacion + ' de 5'">
+                                    @for (i of estrellas; track i) {
+                                    <svg class="estrella" [class.estrella--activa]="i <= resena.calificacion"
+                                        viewBox="0 0 24 24" aria-hidden="true">
+                                        <path d="M12 2.8l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.6 6.2 20.7l1.1-6.5-4.7-4.6 6.5-.9L12 2.8Z" />
+                                    </svg>
+                                    }
+                                    <span class="estrellas__nota">{{ resena.calificacion }}/5</span>
+                                </div>
+                            </td>
+                            <td class="tabla__fecha">{{ resena.fechaVisita | date: 'dd/MM/yyyy' }}</td>
+                            <td class="tabla__observaciones">{{ resena.observaciones }}</td>
+                            <td>
+                                <div class="acciones">
+                                    <button class="acciones__boton acciones__boton--editar"
+                                        [attr.aria-label]="'Editar ' + resena.nombreRestaurante"
+                                        (click)="editarResena(resena)">
+                                        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                            <path d="M4 20l4.6-1 10-10a2.1 2.1 0 0 0-3-3l-10 10L4 20Z"
+                                                stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" />
+                                            <path d="M14.5 6.5l3 3" stroke="currentColor" stroke-width="1.7"
+                                                stroke-linecap="round" />
+                                        </svg>
+                                    </button>
+                                    <button class="acciones__boton acciones__boton--borrar"
+                                        [attr.aria-label]="'Eliminar ' + resena.nombreRestaurante"
+                                        (click)="eliminarResena(resena._id)">
+                                        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                            <path d="M4.5 7h15M9.5 7V4.5h5V7M7 7l1 13h8l1-13M10.5 11v5M13.5 11v5"
+                                                stroke="currentColor" stroke-width="1.7" stroke-linecap="round"
+                                                stroke-linejoin="round" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        } @empty {
+                        <tr>
+                            <td colspan="5">
+                                <div class="vacio">
+                                    <svg viewBox="0 0 64 64" fill="none" aria-hidden="true">
+                                        <circle cx="32" cy="32" r="26" stroke="currentColor" stroke-width="2" />
+                                        <path d="M18 39h28M21 39a11 11 0 0 1 22 0M32 20v5M26 22l2 4M38 22l-2 4"
+                                            stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round" />
+                                    </svg>
+                                    <strong>Aún no hay reseñas</strong>
+                                    <span>Usa el formulario de al lado para escribir la primera.</span>
+                                </div>
+                            </td>
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <aside class="editor tarjeta">
+            <div class="editor__cabecera">
+                <span class="seccion__kicker">{{ editandoId() ? 'Actualizando entrada' : 'Nueva entrada' }}</span>
+                <h2>{{ editandoId() ? 'Editar reseña' : 'Escribir reseña' }}</h2>
+                <p>{{ editandoId() ? 'Ajusta los datos y guarda los cambios.' : 'Completa los datos de tu visita.' }}</p>
             </div>
 
-            <div class="mb-3">
-                <label for="fechaVisita" class="form-label">Fecha Visita</label>
-                <input class="form-control" formControlName="fechaVisita" type="date" id="fechaVisita">
-            </div>
+            <form [formGroup]="formularioResena" (ngSubmit)="guardarResena()" class="editor__formulario">
+                <div class="campo">
+                    <label for="nombreRestaurante" class="etiqueta-campo">Nombre del restaurante</label>
+                    <input class="form-control campo-control" formControlName="nombreRestaurante" type="text"
+                        id="nombreRestaurante" placeholder="Nombre del restaurante">
+                </div>
 
-            <div class="mb-3">
-                <label for="observaciones" class="form-label">Observaciones</label>
-                <textarea class="form-control" formControlName="observaciones" id="observaciones" rows="3" placeholder="Observaciones de la visita"></textarea>
-            </div>
+                <div class="campo">
+                    <label for="calificacion" class="etiqueta-campo">Calificación (1 a 5)</label>
+                    <input class="form-control campo-control" formControlName="calificacion" type="number" min="1"
+                        max="5" id="calificacion" placeholder="1 a 5">
+                </div>
 
-            <div class="d-flex">
-                <button type="submit" class="btn btn-primary me-2">
-                    {{ editandoId() ? 'Guardar cambios' : 'Crear reseña' }}
-                </button>
-                @if (editandoId()) {
-                    <button type="button" class="btn btn-secondary" (click)="cancelarEdicion()">
-                        Cancelar
+                <div class="campo">
+                    <label for="fechaVisita" class="etiqueta-campo">Fecha de visita</label>
+                    <input class="form-control campo-control" formControlName="fechaVisita" type="date"
+                        id="fechaVisita">
+                </div>
+
+                <div class="campo">
+                    <label for="observaciones" class="etiqueta-campo">Observaciones</label>
+                    <textarea class="form-control campo-control" formControlName="observaciones" id="observaciones"
+                        rows="3" placeholder="¿Qué te gustó de la visita?"></textarea>
+                </div>
+
+                <div class="editor__botones">
+                    <button type="submit" class="btn btn-cafe">
+                        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        <span>{{ editandoId() ? 'Guardar cambios' : 'Crear reseña' }}</span>
                     </button>
-                }
-            </div>
-
-        </form>
+                    @if (editandoId()) {
+                    <button type="button" class="btn btn-crema" (click)="cancelarEdicion()">Cancelar</button>
+                    }
+                </div>
+            </form>
+        </aside>
     </div>
 </div>

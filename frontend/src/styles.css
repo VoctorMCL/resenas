@@ -1,2 +1,282 @@
 /* You can add global styles to this file, and also import other style files */
 @import "bootstrap/dist/css/bootstrap.min.css";
+
+:root {
+    --cafe-oscuro: #3b2418;
+    --cafe: #6f4e37;
+    --cafe-medio: #8b6347;
+    --caramelo: #c99b6d;
+    --miel: #d9a441;
+    --crema: #fffdfa;
+    --crema-clara: #fbf5ee;
+    --crema-arena: #f4e6d7;
+    --pastel-rosa: #f3d9d2;
+    --pastel-miel: #f6e6c8;
+    --pastel-verde: #dfe8d5;
+    --texto: #4a3728;
+    --texto-suave: #8a7364;
+    --borde: #e8d7c5;
+    --sombra: 0 22px 55px rgba(74, 50, 34, 0.16);
+    --sombra-suave: 0 8px 24px rgba(74, 50, 34, 0.09);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    min-height: 100%;
+}
+
+body {
+    margin: 0;
+    color: var(--texto);
+    font-family: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", sans-serif;
+    background:
+        radial-gradient(circle at 10% 12%, rgba(243, 217, 210, 0.55), transparent 32%),
+        radial-gradient(circle at 88% 6%, rgba(246, 230, 200, 0.6), transparent 30%),
+        radial-gradient(circle at 70% 92%, rgba(223, 232, 213, 0.45), transparent 28%),
+        linear-gradient(160deg, #fdf9f4 0%, #f8ede1 52%, #f3e3d3 100%);
+    background-attachment: fixed;
+}
+
+h1,
+h2,
+h3 {
+    font-family: Georgia, "Times New Roman", serif;
+    color: var(--cafe-oscuro);
+    letter-spacing: -0.02em;
+}
+
+@keyframes subir {
+    from {
+        opacity: 0;
+        transform: translateY(22px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes aparecer {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes flotar {
+
+    0%,
+    100% {
+        transform: translate3d(0, 0, 0) rotate(0deg);
+    }
+
+    50% {
+        transform: translate3d(12px, -18px, 0) rotate(12deg);
+    }
+}
+
+@keyframes vapor {
+    0% {
+        opacity: 0;
+        transform: translateY(6px) scaleX(0.9);
+    }
+
+    40% {
+        opacity: 0.85;
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(-14px) scaleX(1.15);
+    }
+}
+
+@keyframes latido {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.06);
+    }
+}
+
+@keyframes destello {
+    from {
+        background-position: 200% center;
+    }
+    to {
+        background-position: -200% center;
+    }
+}
+
+@keyframes entradaAviso {
+    from {
+        opacity: 0;
+        transform: translateX(28px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.btn.btn-cafe {
+    border: 0;
+    border-radius: 14px;
+    padding: 0.8rem 1.3rem;
+    font-weight: 600;
+    color: #fff8ef;
+    background: linear-gradient(135deg, #8b6347 0%, #6f4e37 55%, #4a2f22 100%);
+    box-shadow: 0 10px 22px rgba(74, 47, 34, 0.24);
+    transition: transform 0.25s ease, box-shadow 0.25s ease, filter 0.25s ease;
+}
+
+.btn.btn-cafe:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 28px rgba(74, 47, 34, 0.3);
+    filter: brightness(1.06);
+    color: #fff8ef;
+}
+
+.btn.btn-cafe:active {
+    transform: translateY(0);
+}
+
+.btn.btn-crema {
+    border: 1.5px solid var(--borde);
+    border-radius: 14px;
+    padding: 0.7rem 1.1rem;
+    font-weight: 600;
+    color: var(--cafe);
+    background: var(--crema);
+    transition: transform 0.25s ease, background 0.25s ease, border-color 0.25s ease;
+}
+
+.btn.btn-crema:hover {
+    transform: translateY(-2px);
+    background: var(--crema-arena);
+    border-color: var(--caramelo);
+    color: var(--cafe-oscuro);
+}
+
+.btn.btn-enlace {
+    border: 0;
+    padding: 0.15rem 0.35rem;
+    font-weight: 700;
+    color: var(--cafe);
+    background: transparent;
+    text-decoration: underline;
+    text-decoration-color: var(--caramelo);
+    text-underline-offset: 4px;
+    transition: color 0.2s ease;
+}
+
+.btn.btn-enlace:hover {
+    color: var(--cafe-oscuro);
+}
+
+.form-control.campo-control {
+    border: 1.5px solid var(--borde);
+    border-radius: 14px;
+    padding: 0.8rem 1rem;
+    min-height: 48px;
+    color: var(--texto);
+    background: var(--crema);
+    font-size: 0.95rem;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+}
+
+.form-control.campo-control::placeholder {
+    color: #b9a698;
+}
+
+.form-control.campo-control:focus {
+    border-color: var(--cafe-medio);
+    background: #fffdf9;
+    box-shadow: 0 0 0 4px rgba(201, 155, 109, 0.18);
+}
+
+.form-control.campo-control--icono {
+    padding-left: 3rem;
+}
+
+textarea.form-control.campo-control {
+    resize: vertical;
+    min-height: 110px;
+}
+
+.aviso {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    border-radius: 16px;
+    padding: 0.85rem 1.1rem;
+    font-size: 0.92rem;
+    font-weight: 600;
+    box-shadow: var(--sombra-suave);
+    animation: entradaAviso 0.45s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+}
+
+.aviso svg {
+    width: 20px;
+    height: 20px;
+    flex: 0 0 auto;
+}
+
+.aviso--exito {
+    color: #4c6141;
+    background: var(--pastel-verde);
+    border: 1px solid #c7d6bc;
+}
+
+.aviso--error {
+    color: #8c4b42;
+    background: var(--pastel-rosa);
+    border: 1px solid #e6bab2;
+}
+
+.tarjeta {
+    background: rgba(255, 253, 250, 0.94);
+    border: 1px solid var(--borde);
+    border-radius: 24px;
+    box-shadow: var(--sombra-suave);
+    backdrop-filter: blur(6px);
+}
+
+.etiqueta-campo {
+    display: block;
+    margin-bottom: 0.45rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--texto-suave);
+}
+
+.icono-visual {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
