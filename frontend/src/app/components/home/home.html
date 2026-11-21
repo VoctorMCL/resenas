@@ -226,8 +226,9 @@
                                 </span>
                             </span>
                             }
-                            <input class="valoracion__entrada" type="range" min="1" max="5" step="0.1"
-                                formControlName="calificacion" aria-labelledby="etiqueta-calificacion">
+                            <input class="valoracion__entrada" type="range" min="0" max="5" step="0.1"
+                                formControlName="calificacion" aria-labelledby="etiqueta-calificacion"
+                                (change)="cambiarCalificacion($any($event.target).value)">
                         </div>
 
                         <div class="valoracion__numero">

@@ -403,18 +403,17 @@
     position: relative;
     display: inline-flex;
     align-items: center;
-    gap: 5px;
     height: 34px;
 }
 
 .estrella-caja--grande {
-    width: 26px;
-    height: 26px;
+    width: 30px;
+    height: 30px;
 }
 
 .estrella-caja--grande .estrella {
-    width: 26px;
-    height: 26px;
+    width: 30px;
+    height: 30px;
 }
 
 .valoracion__entrada {
