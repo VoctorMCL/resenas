@@ -1,0 +1,99 @@
+@if (mensajeExito()){
+    <div class="alert alert-success mt-3 mb-0 text-center">
+        {{ mensajeExito() }}
+    </div>
+}
+
+@if (mensajeError()){
+    <div class="alert alert-danger mt-3 mb-0 text-center">
+        {{ mensajeError() }}
+    </div>
+}
+
+<div class="p-3 d-flex justify-content-between align-items-center">
+    <h3 class="fw-bold m-0">Mis Reseñas de Restaurante</h3>
+    <button class="btn btn-secondary" (click)="cerrarSesion()">
+        Cerrar sesión
+    </button>
+</div>
+
+<div class="table-responsive p-3">
+    <table class="table table-striped table-hover table-bordered align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th>Nombre Restaurante</th>
+                <th>Calificación</th>
+                <th>Fecha Visita</th>
+                <th>Observaciones</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (resena of resenas(); track resena._id) {
+                <tr>
+                    <td>{{ resena.nombreRestaurante }}</td>
+                    <td>{{ resena.calificacion }} / 5</td>
+                    <td>{{ resena.fechaVisita | date: 'yyyy-MM-dd' }}</td>
+                    <td>{{ resena.observaciones }}</td>
+                    <td>
+                        <button class="btn btn-warning me-2" (click)="editarResena(resena)">
+                            Editar
+                        </button>
+                        <button class="btn btn-danger" (click)="eliminarResena(resena._id)">
+                            Eliminar
+                        </button>
+                    </td>
+                </tr>
+            } @empty {
+                <tr>
+                    <td colspan="5" class="text-center text-muted py-3">
+                        No hay reseñas registradas. Utiliza el formulario de abajo para crear una.
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div class="d-flex align-items-center justify-content-center bg-light p-4">
+    <div class="card shadow p-4 custom-box">
+        <div class="text-center mb-4">
+            <h2 class="fw-bold">{{ editandoId() ? 'Editar reseña' : 'Crear reseña' }}</h2>
+        </div>
+
+        <form [formGroup]="formularioResena" (ngSubmit)="guardarResena()">
+
+            <div class="mb-3">
+                <label for="nombreRestaurante" class="form-label">Nombre Restaurante</label>
+                <input class="form-control" formControlName="nombreRestaurante" type="text" id="nombreRestaurante" placeholder="Nombre del restaurante">
+            </div>
+
+            <div class="mb-3">
+                <label for="calificacion" class="form-label">Calificación (1 a 5)</label>
+                <input class="form-control" formControlName="calificacion" type="number" min="1" max="5" id="calificacion" placeholder="1 a 5">
+            </div>
+
+            <div class="mb-3">
+                <label for="fechaVisita" class="form-label">Fecha Visita</label>
+                <input class="form-control" formControlName="fechaVisita" type="date" id="fechaVisita">
+            </div>
+
+            <div class="mb-3">
+                <label for="observaciones" class="form-label">Observaciones</label>
+                <textarea class="form-control" formControlName="observaciones" id="observaciones" rows="3" placeholder="Observaciones de la visita"></textarea>
+            </div>
+
+            <div class="d-flex">
+                <button type="submit" class="btn btn-primary me-2">
+                    {{ editandoId() ? 'Guardar cambios' : 'Crear reseña' }}
+                </button>
+                @if (editandoId()) {
+                    <button type="button" class="btn btn-secondary" (click)="cancelarEdicion()">
+                        Cancelar
+                    </button>
+                }
+            </div>
+
+        </form>
+    </div>
+</div>
