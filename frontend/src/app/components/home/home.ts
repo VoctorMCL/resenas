@@ -22,6 +22,14 @@ export class Home {
   mensajeExito = signal('');
   editandoId = signal<string | null>(null);
   estrellas = [1, 2, 3, 4, 5];
+  hoy = this.obtenerHoy();
+
+  private obtenerHoy(): string {
+    let fecha = new Date();
+    let mes = String(fecha.getMonth() + 1).padStart(2, '0');
+    let dia = String(fecha.getDate()).padStart(2, '0');
+    return fecha.getFullYear() + '-' + mes + '-' + dia;
+  }
 
   promedioCalificacion(): string {
     let lista = this.resenas();
@@ -30,6 +38,20 @@ export class Home {
     }
     let total = lista.reduce((suma, resena) => suma + Number(resena.calificacion), 0);
     return (total / lista.length).toFixed(1);
+  }
+
+  porcentajeTotal(calificacion: number | string | null | undefined): string {
+    return (Math.max(0, Math.min(5, Number(calificacion) || 0)) / 5) * 100 + '%';
+  }
+
+  porcentajeEstrella(calificacion: number | string | null | undefined, posicion: number): string {
+    let valor = Number(calificacion) || 0;
+    let fraccion = Math.max(0, Math.min(1, valor - (posicion - 1)));
+    return fraccion * 100 + '%';
+  }
+
+  formatearCalificacion(calificacion: number | string | null | undefined): string {
+    return (Number(calificacion) || 0).toFixed(1);
   }
 
   formularioResena = new FormGroup({
@@ -90,13 +112,18 @@ export class Home {
     let fechaVisita = this.formularioResena.value.fechaVisita || '';
     let observaciones = this.formularioResena.value.observaciones || '';
 
-    if (!nombreRestaurante.trim() || !calificacion || !fechaVisita || !observaciones.trim()) {
+    if (!nombreRestaurante.trim() || !fechaVisita || !observaciones.trim()) {
       this.mensajeError.set('Todos los campos son obligatorios: Nombre Restaurante, Calificación, Fecha Visita y Observaciones');
       return;
     }
 
     if (calificacion < 1 || calificacion > 5) {
       this.mensajeError.set('La calificación debe estar entre 1 y 5');
+      return;
+    }
+
+    if (fechaVisita > this.hoy) {
+      this.mensajeError.set('La fecha de visita no puede ser futura');
       return;
     }
 

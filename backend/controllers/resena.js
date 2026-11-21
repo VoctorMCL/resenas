@@ -7,6 +7,17 @@ function sinUsuario(resp) {
     return resp.status(401).send({ 'message': 'No se pudo identificar al usuario' });
 }
 
+function hoyISO() {
+    let fecha = new Date();
+    let mes = String(fecha.getMonth() + 1).padStart(2, '0');
+    let dia = String(fecha.getDate()).padStart(2, '0');
+    return fecha.getFullYear() + '-' + mes + '-' + dia;
+}
+
+function esFechaFutura(valor) {
+    return String(valor).substring(0, 10) > hoyISO();
+}
+
 function formatResena(r) {
     if (!r) return r;
     let obj = r.toObject ? r.toObject() : { ...r };
@@ -48,6 +59,10 @@ function crearResena(req, resp) {
     let fecha = new Date(fechaVisita);
     if (isNaN(fecha.getTime())) {
         return resp.status(400).send({ 'message': 'Fecha de visita inválida' });
+    }
+
+    if (esFechaFutura(fechaVisita)) {
+        return resp.status(400).send({ 'message': 'La fecha de visita no puede ser futura' });
     }
 
     let nuevaResena = new Resena({
@@ -145,6 +160,9 @@ function actualizarResena(req, resp) {
         let fecha = new Date(body.fechaVisita || body.fecha);
         if (isNaN(fecha.getTime())) {
             return resp.status(400).send({ 'message': 'Fecha de visita inválida' });
+        }
+        if (esFechaFutura(body.fechaVisita || body.fecha)) {
+            return resp.status(400).send({ 'message': 'La fecha de visita no puede ser futura' });
         }
         updateData.fechaVisita = fecha;
         updateData.fecha = fecha;

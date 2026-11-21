@@ -131,14 +131,21 @@
                                 </div>
                             </td>
                             <td>
-                                <div class="estrellas" [attr.aria-label]="resena.calificacion + ' de 5'">
+                                <div class="estrellas" [attr.aria-label]="formatearCalificacion(resena.calificacion) + ' de 5'">
                                     @for (i of estrellas; track i) {
-                                    <svg class="estrella" [class.estrella--activa]="i <= resena.calificacion"
-                                        viewBox="0 0 24 24" aria-hidden="true">
-                                        <path d="M12 2.8l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.6 6.2 20.7l1.1-6.5-4.7-4.6 6.5-.9L12 2.8Z" />
-                                    </svg>
+                                    <span class="estrella-caja">
+                                        <svg class="estrella estrella--base" viewBox="0 0 24 24" aria-hidden="true">
+                                            <path d="M12 2.8l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.6 6.2 20.7l1.1-6.5-4.7-4.6 6.5-.9L12 2.8Z" />
+                                        </svg>
+                                        <span class="estrella-caja__relleno"
+                                            [style.width]="porcentajeEstrella(resena.calificacion, i)">
+                                            <svg class="estrella estrella--llena" viewBox="0 0 24 24" aria-hidden="true">
+                                                <path d="M12 2.8l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.6 6.2 20.7l1.1-6.5-4.7-4.6 6.5-.9L12 2.8Z" />
+                                            </svg>
+                                        </span>
+                                    </span>
                                     }
-                                    <span class="estrellas__nota">{{ resena.calificacion }}/5</span>
+                                    <span class="estrellas__nota">{{ formatearCalificacion(resena.calificacion) }}/5</span>
                                 </div>
                             </td>
                             <td class="tabla__fecha">{{ resena.fechaVisita | date: 'dd/MM/yyyy' }}</td>
@@ -203,15 +210,36 @@
                 </div>
 
                 <div class="campo">
-                    <label for="calificacion" class="etiqueta-campo">Calificación (1 a 5)</label>
-                    <input class="form-control campo-control" formControlName="calificacion" type="number" min="1"
-                        max="5" id="calificacion" placeholder="1 a 5">
+                    <span class="etiqueta-campo" id="etiqueta-calificacion">Calificación</span>
+                    <div class="valoracion">
+                        <div class="valoracion__estrellas">
+                            <div class="valoracion__capa valoracion__capa--base">
+                                @for (i of estrellas; track i) {
+                                <svg class="estrella estrella--base" viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M12 2.8l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.6 6.2 20.7l1.1-6.5-4.7-4.6 6.5-.9L12 2.8Z" />
+                                </svg>
+                                }
+                            </div>
+                            <div class="valoracion__capa valoracion__capa--llena"
+                                [style.width]="porcentajeTotal(formularioResena.value.calificacion)">
+                                @for (i of estrellas; track i) {
+                                <svg class="estrella estrella--llena" viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M12 2.8l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.6 6.2 20.7l1.1-6.5-4.7-4.6 6.5-.9L12 2.8Z" />
+                                </svg>
+                                }
+                            </div>
+                            <input class="valoracion__entrada" type="range" min="0" max="5" step="0.1"
+                                formControlName="calificacion" aria-labelledby="etiqueta-calificacion">
+                        </div>
+                        <span class="valoracion__numero">{{ formatearCalificacion(formularioResena.value.calificacion) }}</span>
+                    </div>
+                    <small class="valoracion__ayuda">Haz clic o arrastra para marcar fracciones, por ejemplo 4.5 o 4.7.</small>
                 </div>
 
                 <div class="campo">
                     <label for="fechaVisita" class="etiqueta-campo">Fecha de visita</label>
                     <input class="form-control campo-control" formControlName="fechaVisita" type="date"
-                        id="fechaVisita">
+                        id="fechaVisita" [max]="hoy">
                 </div>
 
                 <div class="campo">
