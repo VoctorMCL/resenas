@@ -403,28 +403,18 @@
     position: relative;
     display: inline-flex;
     align-items: center;
-    height: 34px;
-    min-width: 150px;
-}
-
-.valoracion__capa {
-    display: flex;
     gap: 5px;
-    pointer-events: none;
+    height: 34px;
 }
 
-.valoracion__capa .estrella {
+.estrella-caja--grande {
     width: 26px;
     height: 26px;
 }
 
-.valoracion__capa--llena {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    overflow: hidden;
-    white-space: nowrap;
+.estrella-caja--grande .estrella {
+    width: 26px;
+    height: 26px;
 }
 
 .valoracion__entrada {
@@ -471,13 +461,58 @@
 .valoracion__numero {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    min-width: 52px;
-    padding: 0.4rem 0.6rem;
-    border-radius: 11px;
-    font-weight: 800;
-    color: var(--cafe-oscuro);
+    gap: 0.15rem;
+    padding: 0.2rem;
+    border-radius: 12px;
     background: var(--pastel-miel);
+}
+
+.valoracion__campo {
+    width: 52px;
+    padding: 0.25rem 0.1rem;
+    border: 0;
+    border-radius: 8px;
+    font-family: "Nunito", sans-serif;
+    font-size: 0.95rem;
+    font-weight: 800;
+    text-align: center;
+    color: var(--cafe-oscuro);
+    background: rgba(255, 253, 250, 0.75);
+    -moz-appearance: textfield;
+}
+
+.valoracion__campo::-webkit-outer-spin-button,
+.valoracion__campo::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.valoracion__campo:focus {
+    outline: 2px solid var(--caramelo);
+    outline-offset: 1px;
+}
+
+.valoracion__ajuste {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border: 0;
+    border-radius: 8px;
+    color: var(--cafe);
+    background: rgba(255, 253, 250, 0.75);
+    transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.valoracion__ajuste svg {
+    width: 14px;
+    height: 14px;
+}
+
+.valoracion__ajuste:hover {
+    transform: scale(1.08);
+    background: #fffdfa;
 }
 
 .valoracion__ayuda {

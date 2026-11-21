@@ -22,7 +22,10 @@ export class Home {
   mensajeExito = signal('');
   editandoId = signal<string | null>(null);
   estrellas = [1, 2, 3, 4, 5];
-  hoy = this.obtenerHoy();
+
+  get hoy(): string {
+    return this.obtenerHoy();
+  }
 
   private obtenerHoy(): string {
     let fecha = new Date();
@@ -54,9 +57,27 @@ export class Home {
     return (Number(calificacion) || 0).toFixed(1);
   }
 
+  cambiarCalificacion(valor: string): void {
+    let numero = Number(valor);
+    if (valor === '' || isNaN(numero)) {
+      this.formularioResena.controls.calificacion.setValue('');
+      return;
+    }
+    this.formularioResena.controls.calificacion.setValue(String(this.limitarCalificacion(numero)));
+  }
+
+  ajustarCalificacion(delta: number): void {
+    let actual = Number(this.formularioResena.value.calificacion) || 1;
+    this.formularioResena.controls.calificacion.setValue(String(this.limitarCalificacion(actual + delta)));
+  }
+
+  private limitarCalificacion(valor: number): number {
+    return Math.round(Math.max(1, Math.min(5, valor)) * 10) / 10;
+  }
+
   formularioResena = new FormGroup({
     nombreRestaurante: new FormControl(''),
-    calificacion: new FormControl(''),
+    calificacion: new FormControl('1'),
     fechaVisita: new FormControl(''),
     observaciones: new FormControl('')
   });
@@ -101,7 +122,7 @@ export class Home {
 
   cancelarEdicion(): void {
     this.editandoId.set(null);
-    this.formularioResena.reset();
+    this.formularioResena.reset({ calificacion: '1' });
     this.mensajeError.set('');
     this.mensajeExito.set('');
   }
@@ -150,7 +171,7 @@ export class Home {
         next: respuesta => {
           this.resenas.update(lista => [...lista, respuesta.resena!]);
           this.mensajeExito.set('Reseña creada exitosamente');
-          this.formularioResena.reset();
+          this.formularioResena.reset({ calificacion: '1' });
           this.mensajeError.set('');
         },
         error: error => {
