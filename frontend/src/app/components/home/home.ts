@@ -38,10 +38,10 @@ export class Home {
   promedioCalificacion(): string {
     let lista = this.resenas();
     if (!lista.length) {
-      return '0.0';
+      return '0.00';
     }
     let total = lista.reduce((suma, resena) => suma + Number(resena.calificacion), 0);
-    return (total / lista.length).toFixed(1);
+    return (total / lista.length).toFixed(2);
   }
 
   porcentajeTotal(calificacion: number | string | null | undefined): string {
