@@ -37,6 +37,7 @@
             <div>
                 <span class="cabecera__kicker">Diario de</span>
                 <h1>Reseñas de Restaurante</h1>
+                <p class="cabecera__descripcion">Tu espacio · Solo tus reseñas, siempre privadas</p>
             </div>
         </div>
 
@@ -80,13 +81,14 @@
         <article class="resumen__tarjeta resumen__tarjeta--verde">
             <span class="resumen__icono">
                 <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                    <path d="M4 17h16M6 17a6 6 0 0 1 12 0M12 5v3M9 6l1 2M15 6l-1 2" stroke="currentColor"
-                        stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M4.5 7h15M9.5 7V4.5h5V7M7 7l1 13h8l1-13M10.5 11v5M13.5 11v5"
+                        stroke="currentColor" stroke-width="1.7" stroke-linecap="round"
+                        stroke-linejoin="round" />
                 </svg>
             </span>
             <div>
-                <strong class="resumen__numero resumen__numero--texto">Tu espacio</strong>
-                <span class="resumen__texto">Solo tus reseñas, siempre privadas</span>
+                <strong class="resumen__numero">{{ resenasBorradas() }}</strong>
+                <span class="resumen__texto">Reseñas borradas</span>
             </div>
         </article>
     </section>
@@ -202,7 +204,7 @@
                 <p>{{ editandoId() ? 'Ajusta los datos y guarda los cambios.' : 'Completa los datos de tu visita.' }}</p>
             </div>
 
-            <form [formGroup]="formularioResena" (ngSubmit)="guardarResena()" class="editor__formulario">
+            <form [formGroup]="formularioResena" (ngSubmit)="guardarResena()" class="editor__formulario" novalidate>
                 <div class="campo">
                     <label for="nombreRestaurante" class="etiqueta-campo">Nombre del restaurante</label>
                     <input class="form-control campo-control" formControlName="nombreRestaurante" type="text"
@@ -227,8 +229,7 @@
                             </span>
                             }
                             <input class="valoracion__entrada" type="range" min="0" max="5" step="0.1"
-                                formControlName="calificacion" aria-labelledby="etiqueta-calificacion"
-                                (change)="cambiarCalificacion($any($event.target).value)">
+                                formControlName="calificacion" aria-labelledby="etiqueta-calificacion">
                         </div>
 
                         <div class="valoracion__numero">
@@ -238,9 +239,8 @@
                                     <path d="M3 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
                                 </svg>
                             </button>
-                            <input class="valoracion__campo" type="number" min="0" max="5" step="0.1"
-                                [value]="formatearCalificacion(formularioResena.value.calificacion)"
-                                (change)="cambiarCalificacion($any($event.target).value)"
+                            <input class="valoracion__campo" type="text" inputmode="decimal"
+                                formControlName="calificacion" (blur)="normalizarCalificacion()"
                                 aria-label="Calificación numérica">
                             <button type="button" class="valoracion__ajuste" (click)="ajustarCalificacion(0.1)"
                                 aria-label="Subir calificación">
@@ -251,7 +251,7 @@
                             </button>
                         </div>
                     </div>
-                    <small class="valoracion__ayuda">Marca las estrellas o ajusta el número en pasos de 0.1.</small>
+                    <small class="valoracion__ayuda">Marca las estrellas o escribe el valor (0 a 5, usa punto o coma decimal). Los botones ajustan de 0.1 en 0.1.</small>
                 </div>
 
                 <div class="campo">

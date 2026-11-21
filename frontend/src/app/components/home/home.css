@@ -84,6 +84,13 @@
     line-height: 1.15;
 }
 
+.cabecera__descripcion {
+    margin: 0.35rem 0 0;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--texto-suave);
+}
+
 .salir {
     display: inline-flex;
     align-items: center;
@@ -159,11 +166,6 @@
     font-size: 1.85rem;
     line-height: 1.1;
     color: var(--cafe-oscuro);
-}
-
-.resumen__numero--texto {
-    font-size: 1.25rem;
-    padding-top: 0.3rem;
 }
 
 .resumen__texto {

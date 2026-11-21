@@ -22,6 +22,7 @@ export class Home {
   mensajeExito = signal('');
   editandoId = signal<string | null>(null);
   estrellas = [1, 2, 3, 4, 5];
+  resenasBorradas = signal<number>(0);
 
   get hoy(): string {
     return this.obtenerHoy();
@@ -57,13 +58,16 @@ export class Home {
     return (Number(calificacion) || 0).toFixed(1);
   }
 
-  cambiarCalificacion(valor: string): void {
-    let numero = Number(valor);
-    if (valor === '' || isNaN(numero)) {
-      this.formularioResena.controls.calificacion.setValue('');
+  normalizarCalificacion(): void {
+    let control = this.formularioResena.controls.calificacion;
+    let texto = String(control.value ?? '').trim().replace(',', '.');
+
+    if (texto === '' || isNaN(Number(texto))) {
+      control.setValue('');
       return;
     }
-    this.formularioResena.controls.calificacion.setValue(String(this.limitarCalificacion(numero)));
+
+    control.setValue(String(this.limitarCalificacion(Number(texto))));
   }
 
   ajustarCalificacion(delta: number): void {
@@ -80,18 +84,61 @@ export class Home {
 
   formularioResena = new FormGroup({
     nombreRestaurante: new FormControl(''),
-    calificacion: new FormControl('1'),
+    calificacion: new FormControl('1.0'),
     fechaVisita: new FormControl(''),
     observaciones: new FormControl('')
   });
 
   ngOnInit(): void {
+    this.cargarBorradas();
     this.consultarResenas();
+  }
+
+  private claveBorradas(): string {
+    let token = this.authService.obtenerToken() || '';
+    let id = token;
+    try {
+      let partes = token.split('.');
+      if (partes.length > 1) {
+        let base64 = partes[1].replace(/-/g, '+').replace(/_/g, '/');
+        while (base64.length % 4) {
+          base64 += '=';
+        }
+        let payload = JSON.parse(atob(base64));
+        id = payload.sub || token;
+      }
+    } catch {
+      id = token;
+    }
+    return 'resenas_borradas_' + id;
+  }
+
+  private cargarBorradas(): void {
+    try {
+      let valor = Number(localStorage.getItem(this.claveBorradas()) || '0');
+      this.resenasBorradas.set(isNaN(valor) ? 0 : valor);
+    } catch {
+      this.resenasBorradas.set(0);
+    }
+  }
+
+  private registrarBorrada(): void {
+    this.resenasBorradas.update(total => total + 1);
+    try {
+      localStorage.setItem(this.claveBorradas(), String(this.resenasBorradas()));
+    } catch {
+      // El contador sigue visible en pantalla aunque no se pueda persistir
+    }
   }
 
   cerrarSesion(): void {
     this.authService.cerrarSesion();
     this.router.navigate(['/login']);
+  }
+
+  private mensajeDelBackend(error: any, respuesta: string): string {
+    let detalle = error?.error?.message;
+    return detalle ? `${respuesta}: ${detalle}` : respuesta;
   }
 
   consultarResenas(): void {
@@ -101,7 +148,7 @@ export class Home {
         this.resenas.set(lista);
       },
       error: error => {
-        this.mensajeError.set('No se pudieron consultar las reseñas');
+        this.mensajeError.set(this.mensajeDelBackend(error, 'No se pudieron consultar las reseñas'));
         console.error(error);
       }
     });
@@ -125,12 +172,14 @@ export class Home {
 
   cancelarEdicion(): void {
     this.editandoId.set(null);
-    this.formularioResena.reset({ calificacion: '1' });
+    this.formularioResena.reset({ calificacion: '1.0' });
     this.mensajeError.set('');
     this.mensajeExito.set('');
   }
 
   guardarResena(): void {
+    this.normalizarCalificacion();
+
     let nombreRestaurante = this.formularioResena.value.nombreRestaurante || '';
     let calificacionCruda = this.formularioResena.value.calificacion;
     let calificacion = Number(calificacionCruda);
@@ -166,7 +215,7 @@ export class Home {
           this.cancelarEdicion();
         },
         error: error => {
-          this.mensajeError.set('No se pudo actualizar la reseña');
+          this.mensajeError.set(this.mensajeDelBackend(error, 'No se pudo actualizar la reseña'));
           console.error(error);
         }
       });
@@ -176,11 +225,11 @@ export class Home {
         next: respuesta => {
           this.resenas.update(lista => [...lista, respuesta.resena!]);
           this.mensajeExito.set('Reseña creada exitosamente');
-          this.formularioResena.reset({ calificacion: '1' });
+          this.formularioResena.reset({ calificacion: '1.0' });
           this.mensajeError.set('');
         },
         error: error => {
-          this.mensajeError.set('No se pudo crear la reseña');
+          this.mensajeError.set(this.mensajeDelBackend(error, 'No se pudo crear la reseña'));
           console.error(error);
         }
       });
@@ -194,13 +243,14 @@ export class Home {
         next: () => {
           let lista = this.resenas().filter(r => r._id !== id);
           this.resenas.set(lista);
+          this.registrarBorrada();
           this.mensajeExito.set('Reseña eliminada');
           if (this.editandoId() === id) {
             this.cancelarEdicion();
           }
         },
         error: error => {
-          this.mensajeError.set('No se pudo eliminar la reseña');
+          this.mensajeError.set(this.mensajeDelBackend(error, 'No se pudo eliminar la reseña'));
           console.error(error);
         }
       });
