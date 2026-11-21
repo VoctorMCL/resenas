@@ -4,6 +4,7 @@ Aplicación web para la gestión de reseñas de restaurantes, desarrollada como 
 
 ## Integrantes
 
+- **Ricardo Jaraba Gallego**
 - **Víctor Manuel Córdoba Larez**
 
 ## En qué consiste la entrega
