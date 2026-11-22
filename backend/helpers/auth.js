@@ -23,7 +23,7 @@ function validarToken(req, resp, next) {
         }
         let token = req.headers.authorization.replace('Bearer', '').trim();
         let payload = jwt.decode(token, secret);
-        req.userID = payload.sub; // PERMITE RECORDAR QUIEN ESTA LOGUEADO
+        req.userID = payload.sub;
         next();
     } catch (ex) {
         resp.status(401).send({ 'message': 'Token invalido' });

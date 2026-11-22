@@ -89,7 +89,6 @@ function crearResena(req, resp) {
 function consultarResenas(req, resp) {
     if (!req.userID) return sinUsuario(resp);
 
-    // Los usuarios solo pueden visualizar SUS propias reseñas
     Resena.find({ usuario: req.userID }).sort({ fechaVisita: -1 }).then(
         (resenasEncontradas) => {
             resp.status(200).send({ 'resenas': resenasEncontradas.map(formatResena) });

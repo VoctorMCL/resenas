@@ -139,7 +139,6 @@ export class Home {
     try {
       localStorage.setItem(this.claveBorradas(), String(this.resenasBorradas()));
     } catch {
-      // El contador sigue visible en pantalla aunque no se pueda persistir
     }
   }
 
@@ -254,7 +253,6 @@ export class Home {
     let id = this.editandoId();
 
     if (id) {
-      // Actualizar reseña
       this.resenasService.actualizarResena(id, nombreRestaurante, calificacion, fechaVisita, observaciones).subscribe({
         next: respuesta => {
           let actualizada = respuesta.resena!;
@@ -269,7 +267,6 @@ export class Home {
         }
       });
     } else {
-      // Crear reseña
       this.resenasService.crearResena(nombreRestaurante, calificacion, fechaVisita, observaciones).subscribe({
         next: respuesta => {
           this.resenas.update(lista => this.ordenarResenas([...lista, respuesta.resena!]));
