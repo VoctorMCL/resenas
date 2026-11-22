@@ -70,7 +70,7 @@ npm install
 node index.js
 ```
 
-Al conectar se muestra `Conexion exitosa` y el servidor queda escuchando en el puerto **2307**. Si se reutiliza una base de datos de versiones anteriores, `npm run limpiar-aliases` elimina los campos duplicados (`restaurante`, `comentario` y `fecha`) de las reseñas ya guardadas.
+Al conectar se muestra `Conexion exitosa` y el servidor queda escuchando en el puerto **2307**.
 
 **Frontend** (terminal 2):
 
