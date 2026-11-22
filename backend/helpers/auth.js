@@ -3,7 +3,7 @@
 let jwt = require('jwt-simple');
 let moment = require('moment');
 
-let secret = process.env.JWT_SECRET || 'ResenasFinalDesarrolloWeb2026';
+let secret = process.env.JWT_SECRET || 'essecreto123*';
 
 function crearToken(usuario) {
     let payload = {
