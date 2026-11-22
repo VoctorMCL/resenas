@@ -18,7 +18,7 @@ La entrega no incluye carpetas propias del entorno de desarrollo (`node_modules`
 
 ## Qué hace la aplicación
 
-- **Registro e inicio de sesión:** el usuario se registra con usuario y contraseña. La contraseña se almacena encriptada con `bcrypt` y, al iniciar sesión, la API devuelve un token JWT que se guarda en el `sessionStorage` del navegador.
+- **Registro e inicio de sesión:** el usuario se registra con su nombre, usuario y contraseña. La contraseña se almacena encriptada con `bcrypt` y, al iniciar sesión, la API devuelve un token JWT que se guarda en el `sessionStorage` del navegador.
 - **Rutas protegidas:** un guard verifica la existencia del token para acceder a `/home`, y otro evita que un usuario autenticado vuelva a `/login`.
 - **CRUD de reseñas:** el usuario autenticado puede crear, listar, consultar, editar y eliminar sus reseñas. Cada reseña tiene nombre del restaurante, calificación de 0 a 5 marcada con estrellas (con decimales como 4.5 o 4.7), fecha de visita (hasta el día actual) y observaciones.
 - **Aislamiento por usuario:** todas las consultas filtran por el usuario del token (`usuario: req.userID`), por lo que ningún usuario puede ver, editar ni eliminar reseñas de otro. Si se intenta acceder a un identificador ajeno, la API responde `404`.

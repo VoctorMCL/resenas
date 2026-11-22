@@ -7,9 +7,10 @@ let bcrypt = require('bcrypt');
 function registrarUsuario(req, resp) {
     let username = req.body.username || req.body.email;
     let password = req.body.password;
+    let nombre = req.body.nombre || req.body.name;
 
-    if (!username || !password) {
-        return resp.status(400).send({ 'message': 'Debe enviar un email/usuario y password' });
+    if (!username || !password || !nombre) {
+        return resp.status(400).send({ 'message': 'Debe enviar un email/usuario, password y nombre' });
     }
 
     Usuarios.findOne({ username: username }).then(
@@ -20,7 +21,8 @@ function registrarUsuario(req, resp) {
 
             let usuario = new Usuarios({
                 'username': username,
-                'password': bcrypt.hashSync(password, 10)
+                'password': bcrypt.hashSync(password, 10),
+                'nombre': String(nombre).trim()
             });
 
             usuario.save().then(
@@ -56,7 +58,7 @@ function loguearUsuario(req, resp) {
             }
             resp.status(200).send({
                 'token': auth.crearToken(usuario),
-                'usuario': { _id: usuario._id, username: usuario.username }
+                'usuario': { _id: usuario._id, username: usuario.username, nombre: usuario.nombre || usuario.username }
             });
         },
         err => {

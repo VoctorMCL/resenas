@@ -31,10 +31,11 @@ export class Auth {
     return this.http.post<LoginResponse>(this.apiUrl + 'login', body);
   }
 
-  registrar(username: string, password: string): Observable<RegistroResponse> {
+  registrar(username: string, password: string, nombre: string): Observable<RegistroResponse> {
     let body = {
       username: username,
-      password: password
+      password: password,
+      nombre: nombre
     };
 
     return this.http.post<RegistroResponse>(this.apiUrl + 'registrar', body);
@@ -46,6 +47,24 @@ export class Auth {
 
   obtenerToken(): string | null {
     return sessionStorage.getItem('token');
+  }
+
+  obtenerNombre(): string {
+    let token = this.obtenerToken() || '';
+    try {
+      let partes = token.split('.');
+      if (partes.length > 1) {
+        let base64 = partes[1].replace(/-/g, '+').replace(/_/g, '/');
+        while (base64.length % 4) {
+          base64 += '=';
+        }
+        let payload = JSON.parse(atob(base64));
+        return payload.nombre || payload.username || '';
+      }
+    } catch {
+      return '';
+    }
+    return '';
   }
 
   estaLogueado(): boolean {

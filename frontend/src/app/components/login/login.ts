@@ -16,6 +16,7 @@ export class Login {
   router = inject(Router);
 
   formularioLogin = new FormGroup({
+    nombre: new FormControl(''),
     email: new FormControl(''),
     password: new FormControl('')
   });
@@ -31,7 +32,8 @@ export class Login {
   }
 
   iniciarSesion() {
-    let email = this.formularioLogin.value.email || '';
+    let nombre = (this.formularioLogin.value.nombre || '').trim();
+    let email = (this.formularioLogin.value.email || '').trim();
     let password = this.formularioLogin.value.password || '';
 
     if (!email || !password) {
@@ -39,8 +41,13 @@ export class Login {
       return;
     }
 
+    if (this.esRegistro() && !nombre) {
+      this.mensajeError.set('Ingrese su nombre');
+      return;
+    }
+
     if (this.esRegistro()) {
-      this.authService.registrar(email, password).subscribe({
+      this.authService.registrar(email, password, nombre).subscribe({
         next: respuesta => {
           this.mensajeExito.set('Usuario creado con éxito. Iniciando sesión...');
           this.authService.login(email, password).subscribe({

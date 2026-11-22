@@ -23,9 +23,16 @@ export class Home {
   editandoId = signal<string | null>(null);
   estrellas = [1, 2, 3, 4, 5];
   resenasBorradas = signal<number>(0);
+  progresoAviso = signal<number>(100);
+  private temporizadorAviso: ReturnType<typeof setInterval> | null = null;
+  private duracionAviso = 6000;
 
   get hoy(): string {
     return this.obtenerHoy();
+  }
+
+  get nombreUsuario(): string {
+    return this.authService.obtenerNombre();
   }
 
   private obtenerHoy(): string {
@@ -38,10 +45,11 @@ export class Home {
   promedioCalificacion(): string {
     let lista = this.resenas();
     if (!lista.length) {
-      return '0.00';
+      return '0';
     }
     let total = lista.reduce((suma, resena) => suma + Number(resena.calificacion), 0);
-    return (total / lista.length).toFixed(2);
+    let promedio = Number((total / lista.length).toFixed(2));
+    return String(promedio);
   }
 
   porcentajeTotal(calificacion: number | string | null | undefined): string {
@@ -56,6 +64,10 @@ export class Home {
 
   formatearCalificacion(calificacion: number | string | null | undefined): string {
     return (Number(calificacion) || 0).toFixed(1);
+  }
+
+  cambiarCalificacionTexto(valor: string): void {
+    this.formularioResena.controls.calificacion.setValue(valor);
   }
 
   normalizarCalificacion(): void {
@@ -141,6 +153,41 @@ export class Home {
     return detalle ? `${respuesta}: ${detalle}` : respuesta;
   }
 
+  mostrarAviso(tipo: 'exito' | 'error', texto: string): void {
+    this.limpiarTemporizador();
+    this.mensajeExito.set(tipo === 'exito' ? texto : '');
+    this.mensajeError.set(tipo === 'error' ? texto : '');
+    this.progresoAviso.set(100);
+
+    let inicio = Date.now();
+    this.temporizadorAviso = setInterval(() => {
+      let transcurrido = Date.now() - inicio;
+      let restante = Math.max(0, 100 - (transcurrido / this.duracionAviso) * 100);
+      this.progresoAviso.set(restante);
+      if (restante <= 0) {
+        this.limpiarAviso();
+      }
+    }, 50);
+  }
+
+  limpiarAviso(): void {
+    this.limpiarTemporizador();
+    this.mensajeExito.set('');
+    this.mensajeError.set('');
+    this.progresoAviso.set(100);
+  }
+
+  private limpiarTemporizador(): void {
+    if (this.temporizadorAviso !== null) {
+      clearInterval(this.temporizadorAviso);
+      this.temporizadorAviso = null;
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.limpiarTemporizador();
+  }
+
   consultarResenas(): void {
     this.resenasService.consultarResenas().subscribe({
       next: respuesta => {
@@ -148,7 +195,7 @@ export class Home {
         this.resenas.set(lista);
       },
       error: error => {
-        this.mensajeError.set(this.mensajeDelBackend(error, 'No se pudieron consultar las reseñas'));
+        this.mostrarAviso('error', this.mensajeDelBackend(error, 'No se pudieron consultar las reseñas'));
         console.error(error);
       }
     });
@@ -166,15 +213,13 @@ export class Home {
       fechaVisita: fecha,
       observaciones: resena.observaciones || resena.comentario || ''
     });
-    this.mensajeError.set('');
-    this.mensajeExito.set('');
+    this.limpiarAviso();
   }
 
   cancelarEdicion(): void {
     this.editandoId.set(null);
     this.formularioResena.reset({ calificacion: '1.0' });
-    this.mensajeError.set('');
-    this.mensajeExito.set('');
+    this.limpiarAviso();
   }
 
   guardarResena(): void {
@@ -188,17 +233,17 @@ export class Home {
 
     if (!nombreRestaurante.trim() || !fechaVisita || !observaciones.trim() ||
       calificacionCruda === '' || calificacionCruda === null || calificacionCruda === undefined || isNaN(calificacion)) {
-      this.mensajeError.set('Todos los campos son obligatorios: Nombre Restaurante, Calificación, Fecha Visita y Observaciones');
+      this.mostrarAviso('error', 'Todos los campos son obligatorios: Nombre Restaurante, Calificación, Fecha Visita y Observaciones');
       return;
     }
 
     if (calificacion < 0 || calificacion > 5) {
-      this.mensajeError.set('La calificación debe estar entre 0 y 5');
+      this.mostrarAviso('error', 'La calificación debe estar entre 0 y 5');
       return;
     }
 
     if (fechaVisita > this.hoy) {
-      this.mensajeError.set('La fecha de visita no puede ser futura');
+      this.mostrarAviso('error', 'La fecha de visita no puede ser futura');
       return;
     }
 
@@ -211,11 +256,11 @@ export class Home {
           let actualizada = respuesta.resena!;
           let lista = this.resenas().map(item => item._id === id ? actualizada : item);
           this.resenas.set(lista);
-          this.mensajeExito.set('Reseña actualizada exitosamente');
           this.cancelarEdicion();
+          this.mostrarAviso('exito', 'Reseña actualizada exitosamente');
         },
         error: error => {
-          this.mensajeError.set(this.mensajeDelBackend(error, 'No se pudo actualizar la reseña'));
+          this.mostrarAviso('error', this.mensajeDelBackend(error, 'No se pudo actualizar la reseña'));
           console.error(error);
         }
       });
@@ -224,12 +269,11 @@ export class Home {
       this.resenasService.crearResena(nombreRestaurante, calificacion, fechaVisita, observaciones).subscribe({
         next: respuesta => {
           this.resenas.update(lista => [...lista, respuesta.resena!]);
-          this.mensajeExito.set('Reseña creada exitosamente');
           this.formularioResena.reset({ calificacion: '1.0' });
-          this.mensajeError.set('');
+          this.mostrarAviso('exito', 'Reseña creada exitosamente');
         },
         error: error => {
-          this.mensajeError.set(this.mensajeDelBackend(error, 'No se pudo crear la reseña'));
+          this.mostrarAviso('error', this.mensajeDelBackend(error, 'No se pudo crear la reseña'));
           console.error(error);
         }
       });
@@ -244,13 +288,13 @@ export class Home {
           let lista = this.resenas().filter(r => r._id !== id);
           this.resenas.set(lista);
           this.registrarBorrada();
-          this.mensajeExito.set('Reseña eliminada');
           if (this.editandoId() === id) {
             this.cancelarEdicion();
           }
+          this.mostrarAviso('exito', 'Reseña eliminada');
         },
         error: error => {
-          this.mensajeError.set(this.mensajeDelBackend(error, 'No se pudo eliminar la reseña'));
+          this.mostrarAviso('error', this.mensajeDelBackend(error, 'No se pudo eliminar la reseña'));
           console.error(error);
         }
       });

@@ -1,6 +1,7 @@
 .acceso {
     position: relative;
     min-height: 100vh;
+    min-height: 100dvh;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -312,7 +313,7 @@
 
 @media (max-width: 780px) {
     .acceso {
-        padding: 1.25rem;
+        padding: 1.25rem 0.85rem;
     }
 
     .acceso__tarjeta {
@@ -357,12 +358,30 @@
 }
 
 @media (max-width: 420px) {
+    .acceso {
+        padding: 0.85rem;
+        align-items: flex-start;
+    }
+
+    .acceso__arte {
+        padding: 1.5rem 1.2rem;
+    }
+
     .arte__centro {
         grid-template-columns: 1fr;
         text-align: center;
     }
 
     .taza {
+        width: 110px;
         margin: 0 auto;
+    }
+
+    .arte__titulo {
+        font-size: 1.6rem;
+    }
+
+    .acceso__formulario {
+        padding: 1.6rem 1.2rem;
     }
 }
