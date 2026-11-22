@@ -4,12 +4,18 @@ let Usuarios = require('../models/usuarios');
 let auth = require('../helpers/auth');
 let bcrypt = require('bcrypt');
 
-function registrarUsuario(req, resp) {
-    let username = req.body.username || req.body.email;
-    let password = req.body.password;
-    let nombre = req.body.nombre || req.body.name;
+function errorInterno(err, resp, contexto) {
+    console.error(contexto, err);
+    return resp.status(500).send({ 'message': 'Error interno del servidor' });
+}
 
-    if (!username || !password || !nombre) {
+function registrarUsuario(req, resp) {
+    let body = req.body || {};
+    let username = body.username || body.email;
+    let password = body.password;
+    let nombre = body.nombre || body.name;
+
+    if (!username || !password || !nombre || !String(nombre).trim()) {
         return resp.status(400).send({ 'message': 'Debe enviar un email/usuario, password y nombre' });
     }
 
@@ -27,22 +33,26 @@ function registrarUsuario(req, resp) {
 
             usuario.save().then(
                 (usuarioCreado) => {
-                    resp.status(201).send({ 'message': 'usuario creado', 'usuario': usuarioCreado });
+                    resp.status(201).send({
+                        'message': 'usuario creado',
+                        'usuario': {
+                            _id: usuarioCreado._id,
+                            username: usuarioCreado.username,
+                            nombre: usuarioCreado.nombre
+                        }
+                    });
                 },
-                err => {
-                    resp.status(500).send({ 'message': 'Error al crear el usuario', 'error': err });
-                }
+                err => errorInterno(err, resp, 'Error al crear usuario')
             );
         },
-        err => {
-            resp.status(500).send({ 'message': 'Error al consultar usuario', 'error': err });
-        }
+        err => errorInterno(err, resp, 'Error al consultar usuario')
     );
 }
 
 function loguearUsuario(req, resp) {
-    let username = req.body.username || req.body.email;
-    let password = req.body.password;
+    let body = req.body || {};
+    let username = body.username || body.email;
+    let password = body.password;
 
     if (!username || !password) {
         return resp.status(400).send({ 'message': 'Debe enviar un email/usuario y password' });
@@ -50,20 +60,15 @@ function loguearUsuario(req, resp) {
 
     Usuarios.findOne({ 'username': username }).then(
         (usuario) => {
-            if (!usuario) {
-                return resp.status(404).send({ 'message': 'No existe el usuario' });
-            }
-            if (!bcrypt.compareSync(password, usuario.password)) {
-                return resp.status(401).send({ 'message': 'Contraseña incorrecta' });
+            if (!usuario || !bcrypt.compareSync(password, usuario.password)) {
+                return resp.status(401).send({ 'message': 'Credenciales inválidas' });
             }
             resp.status(200).send({
                 'token': auth.crearToken(usuario),
                 'usuario': { _id: usuario._id, username: usuario.username, nombre: usuario.nombre || usuario.username }
             });
         },
-        err => {
-            resp.status(500).send({ 'message': 'Error al autenticar usuario', 'error': err });
-        }
+        err => errorInterno(err, resp, 'Error al autenticar usuario')
     );
 }
 

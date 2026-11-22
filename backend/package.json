@@ -6,11 +6,11 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
+    "limpiar-aliases": "node scripts/limpiar-aliases.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
-    "body-parser": "^2.3.0",
     "cors": "^2.8.6",
     "express": "^5.2.1",
     "jwt-simple": "^0.5.6",

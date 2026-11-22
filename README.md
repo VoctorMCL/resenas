@@ -19,7 +19,7 @@ La entrega no incluye carpetas propias del entorno de desarrollo (`node_modules`
 ## Qué hace la aplicación
 
 - **Registro e inicio de sesión:** el usuario se registra con su nombre, usuario y contraseña. La contraseña se almacena encriptada con `bcrypt` y, al iniciar sesión, la API devuelve un token JWT que se guarda en el `sessionStorage` del navegador.
-- **Rutas protegidas:** un guard verifica la existencia del token para acceder a `/home`, y otro evita que un usuario autenticado vuelva a `/login`.
+- **Rutas protegidas:** los guards validan que el token exista y no esté vencido para acceder a `/home`, y evitan que un usuario autenticado vuelva a `/login`. Un interceptor agrega el header `Authorization` a las peticiones y, si la API responde `401`, cierra la sesión y redirige al login.
 - **CRUD de reseñas:** el usuario autenticado puede crear, listar, consultar, editar y eliminar sus reseñas. Cada reseña tiene nombre del restaurante, calificación de 0 a 5 marcada con estrellas (con decimales como 4.5 o 4.7), fecha de visita (hasta el día actual) y observaciones.
 - **Aislamiento por usuario:** todas las consultas filtran por el usuario del token (`usuario: req.userID`), por lo que ningún usuario puede ver, editar ni eliminar reseñas de otro. Si se intenta acceder a un identificador ajeno, la API responde `404`.
 
@@ -31,7 +31,8 @@ La entrega no incluye carpetas propias del entorno de desarrollo (`node_modules`
 | Backend | Node.js + Express + Mongoose |
 | Base de datos | MongoDB (`mongodb://localhost:27017/resenas`) |
 | Autenticación | JWT con `jwt-simple` + `bcrypt` |
-| Pruebas | Peticiones HTTP con `fetch` de Node |
+
+El proyecto se verificó con **Node.js 26 y npm 11** (compatible con Node.js 22 o superior). El secreto JWT incluido en el código (`JWT_SECRET`) es únicamente para desarrollo; en un despliegue real debe definirse mediante la variable de entorno `JWT_SECRET`.
 
 ## Diseño e interfaz
 
@@ -69,7 +70,7 @@ npm install
 node index.js
 ```
 
-Al conectar se muestra `Conexion exitosa` y el servidor queda escuchando en el puerto **2307**.
+Al conectar se muestra `Conexion exitosa` y el servidor queda escuchando en el puerto **2307**. Si se reutiliza una base de datos de versiones anteriores, `npm run limpiar-aliases` elimina los campos duplicados (`restaurante`, `comentario` y `fecha`) de las reseñas ya guardadas.
 
 **Frontend** (terminal 2):
 

@@ -188,11 +188,15 @@ export class Home {
     this.limpiarTemporizador();
   }
 
+  private ordenarResenas(lista: Array<Resena>): Array<Resena> {
+    return [...lista].sort((a, b) =>
+      new Date(b.fechaVisita).getTime() - new Date(a.fechaVisita).getTime());
+  }
+
   consultarResenas(): void {
     this.resenasService.consultarResenas().subscribe({
       next: respuesta => {
-        let lista = respuesta.resenas || respuesta.reviews || [];
-        this.resenas.set(lista);
+        this.resenas.set(respuesta.resenas || []);
       },
       error: error => {
         this.mostrarAviso('error', this.mensajeDelBackend(error, 'No se pudieron consultar las reseñas'));
@@ -208,10 +212,10 @@ export class Home {
       fecha = new Date(resena.fechaVisita).toISOString().substring(0, 10);
     }
     this.formularioResena.setValue({
-      nombreRestaurante: resena.nombreRestaurante || resena.restaurante || '',
+      nombreRestaurante: resena.nombreRestaurante || '',
       calificacion: String(resena.calificacion),
       fechaVisita: fecha,
-      observaciones: resena.observaciones || resena.comentario || ''
+      observaciones: resena.observaciones || ''
     });
     this.limpiarAviso();
   }
@@ -255,7 +259,7 @@ export class Home {
         next: respuesta => {
           let actualizada = respuesta.resena!;
           let lista = this.resenas().map(item => item._id === id ? actualizada : item);
-          this.resenas.set(lista);
+          this.resenas.set(this.ordenarResenas(lista));
           this.cancelarEdicion();
           this.mostrarAviso('exito', 'Reseña actualizada exitosamente');
         },
@@ -268,7 +272,7 @@ export class Home {
       // Crear reseña
       this.resenasService.crearResena(nombreRestaurante, calificacion, fechaVisita, observaciones).subscribe({
         next: respuesta => {
-          this.resenas.update(lista => [...lista, respuesta.resena!]);
+          this.resenas.update(lista => this.ordenarResenas([...lista, respuesta.resena!]));
           this.formularioResena.reset({ calificacion: '1.0' });
           this.mostrarAviso('exito', 'Reseña creada exitosamente');
         },

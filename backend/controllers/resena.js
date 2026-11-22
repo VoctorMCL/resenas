@@ -18,22 +18,23 @@ function esFechaFutura(valor) {
     return String(valor).substring(0, 10) > hoyISO();
 }
 
+function idInvalido(id, resp) {
+    if (!mongoose.isValidObjectId(id)) {
+        resp.status(404).send({ 'message': 'Reseña no encontrada' });
+        return true;
+    }
+    return false;
+}
+
+function errorInterno(err, resp, contexto) {
+    console.error(contexto, err);
+    return resp.status(500).send({ 'message': 'Error interno del servidor' });
+}
+
 function formatResena(r) {
     if (!r) return r;
     let obj = r.toObject ? r.toObject() : { ...r };
     delete obj.__v;
-
-    let nombre = obj.nombreRestaurante || obj.restaurante || '';
-    let obs = obj.observaciones || obj.comentario || '';
-    let fec = obj.fechaVisita || obj.fecha || null;
-
-    obj.nombreRestaurante = nombre;
-    obj.restaurante = nombre;
-    obj.observaciones = obs;
-    obj.comentario = obs;
-    obj.fechaVisita = fec;
-    obj.fecha = fec;
-
     return obj;
 }
 
@@ -41,12 +42,13 @@ function crearResena(req, resp) {
     if (!req.userID) return sinUsuario(resp);
 
     let body = req.body || {};
-    let nombreRestaurante = body.nombreRestaurante || body.restaurante;
+    let nombreRestaurante = body.nombreRestaurante;
     let calificacion = Number(body.calificacion);
-    let fechaVisita = body.fechaVisita || body.fecha;
-    let observaciones = body.observaciones !== undefined ? body.observaciones : body.comentario;
+    let fechaVisita = body.fechaVisita;
+    let observaciones = body.observaciones;
 
-    if (!nombreRestaurante || isNaN(calificacion) || !fechaVisita || !observaciones) {
+    if (!nombreRestaurante || isNaN(calificacion) || !fechaVisita ||
+        observaciones === undefined || observaciones === null || !String(observaciones).trim()) {
         return resp.status(400).send({
             'message': 'Todos los campos son obligatorios: nombreRestaurante, calificacion, fechaVisita, observaciones'
         });
@@ -70,24 +72,17 @@ function crearResena(req, resp) {
         nombreRestaurante: String(nombreRestaurante).trim(),
         calificacion: calificacion,
         fechaVisita: fecha,
-        observaciones: String(observaciones).trim(),
-        // Aliases para compatibilidad
-        restaurante: String(nombreRestaurante).trim(),
-        comentario: String(observaciones).trim(),
-        fecha: fecha
+        observaciones: String(observaciones).trim()
     });
 
     nuevaResena.save().then(
         (creada) => {
             resp.status(201).send({
                 'message': 'reseña creada',
-                'resena': formatResena(creada),
-                'review': formatResena(creada)
+                'resena': formatResena(creada)
             });
         },
-        err => {
-            resp.status(500).send({ 'message': 'internal error in database', 'error': err });
-        }
+        err => errorInterno(err, resp, 'Error al crear reseña')
     );
 }
 
@@ -97,16 +92,9 @@ function consultarResenas(req, resp) {
     // Los usuarios solo pueden visualizar SUS propias reseñas
     Resena.find({ usuario: req.userID }).sort({ fechaVisita: -1 }).then(
         (resenasEncontradas) => {
-            let lista = resenasEncontradas.map(formatResena);
-            resp.status(200).send({
-                'resenas': lista,
-                'reviews': lista,
-                'resena': lista
-            });
+            resp.status(200).send({ 'resenas': resenasEncontradas.map(formatResena) });
         },
-        err => {
-            resp.status(500).send({ 'message': 'internal error in database', 'error': err });
-        }
+        err => errorInterno(err, resp, 'Error al consultar reseñas')
     );
 }
 
@@ -114,21 +102,16 @@ function consultarPorId(req, resp) {
     if (!req.userID) return sinUsuario(resp);
 
     let id = req.params._id || req.params.id;
+    if (idInvalido(id, resp)) return;
 
-    // Solo puede consultar si pertenece a su usuario
     Resena.findOne({ _id: id, usuario: req.userID }).then(
         (resenaEncontrada) => {
             if (!resenaEncontrada) {
                 return resp.status(404).send({ 'message': 'Reseña no encontrada' });
             }
-            resp.status(200).send({
-                'resena': formatResena(resenaEncontrada),
-                'review': formatResena(resenaEncontrada)
-            });
+            resp.status(200).send({ 'resena': formatResena(resenaEncontrada) });
         },
-        err => {
-            resp.status(500).send({ 'message': 'internal error in database', 'error': err });
-        }
+        err => errorInterno(err, resp, 'Error al consultar reseña')
     );
 }
 
@@ -136,16 +119,17 @@ function actualizarResena(req, resp) {
     if (!req.userID) return sinUsuario(resp);
 
     let id = req.params._id || req.params.id;
+    if (idInvalido(id, resp)) return;
+
     let body = req.body || {};
     let updateData = {};
 
-    if (body.nombreRestaurante !== undefined || body.restaurante !== undefined) {
-        let nombre = String(body.nombreRestaurante || body.restaurante).trim();
+    if (body.nombreRestaurante !== undefined) {
+        let nombre = String(body.nombreRestaurante).trim();
         if (!nombre) {
             return resp.status(400).send({ 'message': 'El nombre del restaurante no puede estar vacío' });
         }
         updateData.nombreRestaurante = nombre;
-        updateData.restaurante = nombre;
     }
 
     if (body.calificacion !== undefined) {
@@ -156,32 +140,29 @@ function actualizarResena(req, resp) {
         updateData.calificacion = cal;
     }
 
-    if (body.fechaVisita !== undefined || body.fecha !== undefined) {
-        let fecha = new Date(body.fechaVisita || body.fecha);
+    if (body.fechaVisita !== undefined) {
+        let fecha = new Date(body.fechaVisita);
         if (isNaN(fecha.getTime())) {
             return resp.status(400).send({ 'message': 'Fecha de visita inválida' });
         }
-        if (esFechaFutura(body.fechaVisita || body.fecha)) {
+        if (esFechaFutura(body.fechaVisita)) {
             return resp.status(400).send({ 'message': 'La fecha de visita no puede ser futura' });
         }
         updateData.fechaVisita = fecha;
-        updateData.fecha = fecha;
     }
 
-    if (body.observaciones !== undefined || body.comentario !== undefined) {
-        let obs = String(body.observaciones !== undefined ? body.observaciones : body.comentario).trim();
+    if (body.observaciones !== undefined) {
+        let obs = String(body.observaciones).trim();
         if (!obs) {
             return resp.status(400).send({ 'message': 'Las observaciones no pueden estar vacías' });
         }
         updateData.observaciones = obs;
-        updateData.comentario = obs;
     }
 
     if (Object.keys(updateData).length === 0) {
         return resp.status(400).send({ 'message': 'No se enviaron datos para actualizar' });
     }
 
-    // Solo actualiza si pertenece a su propio usuario
     Resena.findOneAndUpdate(
         { _id: id, usuario: req.userID },
         { $set: updateData },
@@ -193,13 +174,10 @@ function actualizarResena(req, resp) {
             }
             resp.status(200).send({
                 'message': 'reseña actualizada',
-                'resena': formatResena(resenaActualizada),
-                'review': formatResena(resenaActualizada)
+                'resena': formatResena(resenaActualizada)
             });
         },
-        err => {
-            resp.status(500).send({ 'message': 'internal error in database', 'error': err });
-        }
+        err => errorInterno(err, resp, 'Error al actualizar reseña')
     );
 }
 
@@ -207,8 +185,8 @@ function eliminarResena(req, resp) {
     if (!req.userID) return sinUsuario(resp);
 
     let id = req.params._id || req.params.id;
+    if (idInvalido(id, resp)) return;
 
-    // Solo elimina si pertenece a su propio usuario
     Resena.findOneAndDelete({ _id: id, usuario: req.userID }).then(
         (resenaEliminada) => {
             if (!resenaEliminada) {
@@ -216,13 +194,10 @@ function eliminarResena(req, resp) {
             }
             resp.status(200).send({
                 'message': 'reseña eliminada',
-                'resena': formatResena(resenaEliminada),
-                'review': formatResena(resenaEliminada)
+                'resena': formatResena(resenaEliminada)
             });
         },
-        err => {
-            resp.status(500).send({ 'message': 'internal error in database', 'error': err });
-        }
+        err => errorInterno(err, resp, 'Error al eliminar reseña')
     );
 }
 

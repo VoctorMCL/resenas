@@ -163,7 +163,7 @@
                                     <span class="estrellas__nota">{{ formatearCalificacion(resena.calificacion) }}/5</span>
                                 </div>
                             </td>
-                            <td class="tabla__fecha">{{ resena.fechaVisita | date: 'dd/MM/yyyy' }}</td>
+                            <td class="tabla__fecha">{{ resena.fechaVisita | date: 'dd/MM/yyyy' : 'UTC' }}</td>
                             <td class="tabla__observaciones">{{ resena.observaciones }}</td>
                             <td>
                                 <div class="acciones">

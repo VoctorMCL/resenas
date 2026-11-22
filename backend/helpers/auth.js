@@ -10,7 +10,6 @@ function crearToken(usuario) {
         sub: usuario._id,
         username: usuario.username,
         nombre: usuario.nombre || usuario.username,
-        email: usuario.username,
         iat: moment().unix(),
         exp: moment().add(1, 'days').unix()
     };

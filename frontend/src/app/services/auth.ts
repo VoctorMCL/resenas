@@ -4,13 +4,13 @@ import { Observable } from 'rxjs';
 
 export interface LoginResponse {
   token: string;
-  usuario?: { _id: string; username: string };
+  usuario?: { _id: string; username: string; nombre?: string };
   message?: string;
 }
 
 export interface RegistroResponse {
   message: string;
-  usuario?: { _id: string; username: string };
+  usuario?: { _id: string; username: string; nombre?: string };
 }
 
 @Injectable({
@@ -49,32 +49,41 @@ export class Auth {
     return sessionStorage.getItem('token');
   }
 
-  obtenerNombre(): string {
+  private obtenerPayload(): any {
     let token = this.obtenerToken() || '';
     try {
       let partes = token.split('.');
-      if (partes.length > 1) {
-        let base64 = partes[1].replace(/-/g, '+').replace(/_/g, '/');
-        while (base64.length % 4) {
-          base64 += '=';
-        }
-        let payload = JSON.parse(atob(base64));
-        return payload.nombre || payload.username || '';
+      if (partes.length !== 2) {
+        return null;
       }
+      let base64 = partes[1].replace(/-/g, '+').replace(/_/g, '/');
+      while (base64.length % 4) {
+        base64 += '=';
+      }
+      return JSON.parse(atob(base64));
     } catch {
-      return '';
+      return null;
     }
-    return '';
+  }
+
+  obtenerNombre(): string {
+    let payload = this.obtenerPayload();
+    return payload ? (payload.nombre || payload.username || '') : '';
   }
 
   estaLogueado(): boolean {
-    let token = this.obtenerToken();
-
-    if (token) {
-      return true;
-    } else {
+    let payload = this.obtenerPayload();
+    if (!payload) {
       return false;
     }
+
+    let expiracion = Number(payload.exp);
+    if (expiracion && Date.now() / 1000 >= expiracion) {
+      this.cerrarSesion();
+      return false;
+    }
+
+    return true;
   }
 
   cerrarSesion(): void {
