@@ -53,7 +53,7 @@ export class Auth {
     let token = this.obtenerToken() || '';
     try {
       let partes = token.split('.');
-      if (partes.length !== 2) {
+      if (partes.length !== 3) {
         return null;
       }
       let base64 = partes[1].replace(/-/g, '+').replace(/_/g, '/');
